@@ -379,3 +379,26 @@ body {
 .b17{background-image:url(img/tiles/passage/open_door.png);background-color:#bbb;}
 .b18{background-image:url(img/tiles/passage/closed_door.png);}
 .b19{background-image:url(img/tiles/wall/brick_brown-vines_1.png);}
+
+/* Cats overlay on top of grass */
+.b55, .b56, .b57, .b58, .b59 {
+  background-color: transparent !important;
+  position: relative;
+}
+
+.b55::after, .b56::after, .b57::after, .b58::after, .b59::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  pointer-events: none;
+}
+
+/* Cats */
+.b55::after { background-image: url(sorken.img/felids/cat_10.png); }
+.b56::after { background-image: url(sorken.img/felids/cat_9.png); }
+.b57::after { background-image: url(sorken.img/felids/cat_8.png); }
+.b58::after { background-image: url(sorken.img/felids/cat_7.png); }
+.b59::after { background-image: url(sorken.img/felids/cat_6.png); }
