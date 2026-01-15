@@ -156,7 +156,7 @@ audio:not([controls]) {
 }
 .wrapper:before,
 .wrapper:after {
-  content: "";
+  content: '';
   display: table;
 }
 .wrapper:after {
@@ -169,7 +169,8 @@ audio:not([controls]) {
 /* 16px - 100%/1.375 */
 body {
   color: #222;
-  font: 100.01%/1.375 Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 100.01%/1.375 Tahoma, Geneva, 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
 }
 p {
   margin-bottom: 22px;
@@ -326,11 +327,11 @@ body {
   height: 32px;
   background-image: url(img/sprite_mickey_mos_mini.png);
   background-repeat: no-repeat;
-  -webkit-transition-property: left,top;
-  -moz-transition-property: left,top;
-  -ms-transition-property: left,top;
-  -o-transition-property: left,top;
-  transition-property: left,top;
+  -webkit-transition-property: left, top;
+  -moz-transition-property: left, top;
+  -ms-transition-property: left, top;
+  -o-transition-property: left, top;
+  transition-property: left, top;
   -webkit-transition-duration: 0.2s;
   -moz-transition-duration: 0.2s;
   -ms-transition-duration: 0.2s;
@@ -342,52 +343,120 @@ body {
   -o-transition-timing-function: ease;
   transition-timing-function: ease;
 }
-.baddie.up {background-position: -96px 0;}
-.baddie.down {background-position: -64px 0;}
-.baddie.left {background-position: -32px 0;}
-.baddie.right {background-position: 0 0;}
+.baddie.up {
+  background-position: -96px 0;
+}
+.baddie.down {
+  background-position: -64px 0;
+}
+.baddie.left {
+  background-position: -32px 0;
+}
+.baddie.right {
+  background-position: 0 0;
+}
 /** --------------------------------------------------------------
  * Boulder Dash Gameplan
  * 
  */
-.tile, .t, .block, .b{width:32px;height:32px;float:left;background-repeat:no-repeat;}
-.t10{background-image:url(img/tiles/floor/grass_0_old.png);}
-.t19{background-image:url(img/tiles/wall/metal_wall.png);}
-.t12{background-image:url(img/tiles/floor/grass_0_old.png);}
-.t13{background-image:url(img/tiles/floor/grass_1_old.png);}
-.t14{background-image:url(img/tiles/floor/grass_2_old.png);}
-.t15{background-image:url(img/tiles/floor/grass_flowers_red_3_old.png);}
-.t16{background-image:url(img/tiles/floor/grass_flowers_blue_3_old.png);}
-.t17{background-image:url(img/tiles/floor/grass_flowers_yellow_3_old.png);}
-.t18{background-image:url(img/tiles/floor/grass_north_old.png);}
+.tile,
+.t,
+.block,
+.b {
+  width: 32px;
+  height: 32px;
+  float: left;
+  background-repeat: no-repeat;
+}
+.t10 {
+  background-image: url(img/tiles/floor/grass_0_old.png);
+}
+.t19 {
+  background-image: url(img/tiles/wall/metal_wall.png);
+}
+.t12 {
+  background-image: url(img/tiles/floor/grass_0_old.png);
+}
+.t13 {
+  background-image: url(img/tiles/floor/grass_1_old.png);
+}
+.t14 {
+  background-image: url(img/tiles/floor/grass_2_old.png);
+}
+.t15 {
+  background-image: url(img/tiles/floor/grass_flowers_red_3_old.png);
+}
+.t16 {
+  background-image: url(img/tiles/floor/grass_flowers_blue_3_old.png);
+}
+.t17 {
+  background-image: url(img/tiles/floor/grass_flowers_yellow_3_old.png);
+}
+.t18 {
+  background-image: url(img/tiles/floor/grass_north_old.png);
+}
 /* .t19{background-image:url(img/tiles/floor/grass_northwest_old.png);} */
-.t20{background-image:url(img/tiles/floor/grass_west_old.png);}
-.t21{background-image:url(img/tiles/floor/grass_full_old.png);}
-.t22{background-image:url(img/tiles/floor/grass_southwest_old.png);}
-.t23{background-image:url(img/tiles/floor/grass_south_old.png);}
-.t11{
-  background-image:url(img/tiles/floor/grass_0_old-hole.png);
+.t20 {
+  background-image: url(img/tiles/floor/grass_west_old.png);
+}
+.t21 {
+  background-image: url(img/tiles/floor/grass_full_old.png);
+}
+.t22 {
+  background-image: url(img/tiles/floor/grass_southwest_old.png);
+}
+.t23 {
+  background-image: url(img/tiles/floor/grass_south_old.png);
+}
+.t11 {
+  background-image: url(img/tiles/floor/grass_0_old-hole.png);
   background-position: center;
   background-size: cover;
 } /* Sorkhål */
-.t25{background-image:url(img/tiles/floor/grass_south_old.png);}
+.t25 {
+  background-image: url(img/tiles/floor/grass_south_old.png);
+}
 
-.b11{background-image:url(img/tiles/wall/metal_wall.png);}
-.b12{background-image:url(img/tiles/wall/crystal_wall02.png);}
-.b13{background-image:url(img/tiles/wall/mirrored_wall_old.png);}
-.b14{background-image:url(img/tiles/wall/green_crystal_wall.png);background-color:green;}
-.b17{background-image:url(img/tiles/passage/open_door.png);background-color:#bbb;}
-.b18{background-image:url(img/tiles/passage/closed_door.png);}
-.b19{background-image:url(img/tiles/wall/brick_brown-vines_1.png);}
+.b11 {
+  background-image: url(img/tiles/wall/metal_wall.png);
+}
+.b12 {
+  background-image: url(img/tiles/wall/crystal_wall02.png);
+}
+.b13 {
+  background-image: url(img/tiles/wall/mirrored_wall_old.png);
+}
+.b14 {
+  background-image: url(img/tiles/wall/green_crystal_wall.png);
+  background-color: green;
+}
+.b17 {
+  background-image: url(img/tiles/passage/open_door.png);
+  background-color: #bbb;
+}
+.b18 {
+  background-image: url(img/tiles/passage/closed_door.png);
+}
+.b19 {
+  background-image: url(img/tiles/wall/brick_brown-vines_1.png);
+}
 
 /* Cats overlay on top of grass */
-.b55, .b56, .b57, .b58, .b59 {
+.b55,
+.b56,
+.b57,
+.b58,
+.b59 {
   background-color: transparent !important;
   position: relative;
 }
 
-.b55::after, .b56::after, .b57::after, .b58::after, .b59::after {
-  content: "";
+.b55::after,
+.b56::after,
+.b57::after,
+.b58::after,
+.b59::after {
+  content: '';
   position: absolute;
   inset: 0;
   background-size: contain;
@@ -397,8 +466,24 @@ body {
 }
 
 /* Cats */
-.b55::after { background-image: url(sorken.img/felids/cat_10.png); }
-.b56::after { background-image: url(sorken.img/felids/cat_9.png); }
-.b57::after { background-image: url(sorken.img/felids/cat_8.png); }
-.b58::after { background-image: url(sorken.img/felids/cat_7.png); }
-.b59::after { background-image: url(sorken.img/felids/cat_6.png); }
+.b55::after {
+  background-image: url(sorken.img/felids/cat_10.png);
+}
+.b56::after {
+  background-image: url(sorken.img/felids/cat_9.png);
+}
+.b57::after {
+  background-image: url(sorken.img/felids/cat_8.png);
+}
+.b58::after {
+  background-image: url(sorken.img/felids/cat_7.png);
+}
+.b59::after {
+  background-image: url(sorken.img/felids/cat_6.png);
+}
+
+/*Portals*/
+.b90 {
+  background-image: url(sorken.img/expired_portal.png),
+    url(img/tiles/floor/grass_1_old.png);
+}

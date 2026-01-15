@@ -1,22 +1,20 @@
 /**
  * Work with strings.
  */
-window.addEventListener("DOMContentLoaded", function() {
+window.addEventListener('DOMContentLoaded', function () {
   'use strict';
   let rockford = document.getElementById('baddie1'),
     area = document.getElementById('flash'),
     left = area.offsetLeft, // CSS positioning
-    top  = area.offsetTop,
-    posLeft = 0,    // Steps right/left
-    posTop = 0,     // Steps up/down
-    tileSize = 32,  // Tile size in height/width -> 32px
-    gridSize = 24,  // Grid size 24x24
-  
-
-
+    top = area.offsetTop,
+    posLeft = 0, // Steps right/left
+    posTop = 0, // Steps up/down
+    tileSize = 32, // Tile size in height/width -> 32px
+    gridSize = 24, // Grid size 24x24
     /**
      * This is the background for the game area.
      */
+    // prettier-ignore
     gameArea = [
       19,10,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
       19,10,10,10,10,19,10,10,10,10,10,10,19,10,10,10,10,10,10,19,10,10,10,19,
@@ -43,7 +41,6 @@ window.addEventListener("DOMContentLoaded", function() {
       19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19,
       19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19
     ],
-
     /**
      * These are blocks that cant be moved to, or something happens when you try to move on them.
      * The blocks are drawn "on top" of the gamearea. Block 10 is empty, should be 0 but looks nicer with two figures.
@@ -75,11 +72,12 @@ window.addEventListener("DOMContentLoaded", function() {
     //   19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19
     // ];
 
+    // prettier-ignore
     gameBlocks = [
       19,10,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
       19,10,10,10,10,19,10,10,10,10,10,10,19,10,10,10,10,10,10,19,10,10,10,19,
       19,10,19,19,10,19,10,19,19,19,19,10,19,10,19,19,19,19,10,19,10,19,10,19,
-      19,10,19,10,10,10,10,19,55,10,10,10,10,10,10,10,10,19,10,10,10,19,10,19,
+      19,10,19,10,10,10,10,19,55,10,10,10,10,10,10,10,90,19,10,10,10,19,10,19,
       19,10,19,10,19,19,10,19,10,19,19,19,19,19,10,19,19,19,10,19,10,19,10,19,
       19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,56,10,10,10,19,
       19,19,19,19,19,19,10,19,19,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,
@@ -93,7 +91,7 @@ window.addEventListener("DOMContentLoaded", function() {
       19,19,19,19,19,19,10,19,19,19,10,19,19,19,19,19,10,19,19,19,10,19,19,19,
       19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
       19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
-      19,10,10,10,57,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,59,10,10,19,
+      19,90,10,10,57,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,59,10,10,19,
       19,19,19,19,19,19,10,19,19,19,10,19,19,19,19,19,10,19,19,19,10,19,19,19,
       19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
       19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
@@ -102,131 +100,149 @@ window.addEventListener("DOMContentLoaded", function() {
       19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19
     ];
 
-    /**
-     * Draw the initial gameplan
-    */
-   function drawGamePlan(gameArea, gameBlocks) {
-       area.querySelectorAll('.tile').forEach(tile => tile.remove());
-    
+  /**
+   * Draw the initial gameplan
+   */
+  function drawGamePlan(gameArea, gameBlocks) {
+    area.querySelectorAll('.tile').forEach(tile => tile.remove());
+
     let e;
-     for(let i = 0; i < gameArea.length; i++) {
-       e = document.createElement('div');
-       e.className = 'tile t' + gameArea[i] + ' b' + gameBlocks[i];
+    for (let i = 0; i < gameArea.length; i++) {
+      e = document.createElement('div');
+      e.className = 'tile t' + gameArea[i] + ' b' + gameBlocks[i];
 
-       e.id = 'n' + i;
-       area.appendChild(e);
-      } 
-    };
-    console.log('Drawing gameplan.');  
-    drawGamePlan(gameArea, gameBlocks);
-    
-/**
- * Cats
- */
-const catBlocks = new Set([55, 56, 57, 58, 59]);
-let gameOver = false;
+      e.id = 'n' + i;
+      area.appendChild(e);
+    }
+  }
+  console.log('Drawing gameplan.');
+  drawGamePlan(gameArea, gameBlocks);
 
-// MEOW (läggs UTANFÖR loseGame, så den finns innan den används)
-const catSounds = {
-  55: new Audio("sounds/cat-meow-401729.mp3"),
-  56: new Audio("sounds/cat-meow-297927.mp3"),
-  57: new Audio("sounds/cat-meowing-type-02-293290.mp3"),
-  58: new Audio("sounds/cat-meow-6226.mp3"),
-  59: new Audio("sounds/cat-meowing-type-01-293291.mp3")
-};
+  /**
+   * Cats
+   */
+  const catBlocks = new Set([55, 56, 57, 58, 59]);
+  let gameOver = false;
 
-Object.values(catSounds).forEach(a => {
-  a.preload = "auto";
-  a.volume = 0.8;
-});
+  // MEOW (läggs UTANFÖR loseGame, så den finns innan den används)
+  const catSounds = {
+    55: new Audio('sounds/cat-meow-401729.mp3'),
+    56: new Audio('sounds/cat-meow-297927.mp3'),
+    57: new Audio('sounds/cat-meowing-type-02-293290.mp3'),
+    58: new Audio('sounds/cat-meow-6226.mp3'),
+    59: new Audio('sounds/cat-meowing-type-01-293291.mp3'),
+  };
 
-function loseGame(catValue) {
-  gameOver = true;
+  Object.values(catSounds).forEach(a => {
+    a.preload = 'auto';
+    a.volume = 0.8;
+  });
 
-  const sound = catSounds[catValue];
-  if (sound) {
-    sound.currentTime = 0;
-    sound.play().catch(err => console.log("Audio blocked:", err));
+  function loseGame(catValue) {
+    gameOver = true;
+
+    const sound = catSounds[catValue];
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(err => console.log('Audio blocked:', err));
+    }
+
+    alert(`GAME OVER 💀 Du blev uppäten av en katt!`);
+
+    location.reload();
   }
 
-  alert(`GAME OVER 💀 Du blev uppäten av en katt!`);
-
-location.reload();}
-
-    /**
-     * Move Rockford
-    */
-   let move = function(moveLeft, moveTop, which) {
-     
-     function moveIt() {
-       rockford.style.left = (area.offsetLeft + posLeft*tileSize + tileSize/2) + 'px';
-       rockford.style.top  = (area.offsetTop + posTop*tileSize + tileSize/2) + 'px';      
+  /**
+   * Move Rockford
+   */
+  let move = function (moveLeft, moveTop, which) {
+    function moveIt() {
+      rockford.style.left = area.offsetLeft + posLeft * tileSize + tileSize / 2 + 'px';
+      rockford.style.top = area.offsetTop + posTop * tileSize + tileSize / 2 + 'px';
       //  console.log("
       // Moved to: " + rockford.style.left + "x" + rockford.style.top);
-      };
-      if(which) { rockford.className='baddie ' + which; }
-      
-           /**
-     * Cats
-    */
-      if (gameOver) return;
+    }
 
-      const nextIndex = (posLeft + moveLeft) + (posTop + moveTop) * gridSize;
-      if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
-
-      const nextBlock = gameBlocks[nextIndex];
-
-      // 🐱 KATT = FÖRLUST
-      if (catBlocks.has(nextBlock)) {
-        loseGame(nextBlock);
-        return;
-      }
-
-        if (!(nextBlock - 10)) {
-      posLeft += moveLeft;
-      posTop  += moveTop;
+    function portal(portal1, portal2) { // Make a pair of gameblocks into two-way portals. (n.index of portal 1, n.index portal 2)
+      let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize; // position of enter portal/player
+      let targetIndex = portalIndex === portal1 ? portal2 : portal1; // position of portal player exits
+      posLeft = targetIndex % gridSize; // calculates the new column position of player - Had to leverage AI for this calculation ._.
+      posTop = Math.floor(targetIndex / gridSize); // calculates the new row position of player
       moveIt();
+    }
 
+    if (which) {
+      rockford.className = 'baddie ' + which;
+    }
+
+    /**
+     * Cats
+     */
+    if (gameOver) return;
+
+    const nextIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
+    if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
+
+    const nextBlock = gameBlocks[nextIndex];
+
+    // 🐱 KATT = FÖRLUST
+    if (catBlocks.has(nextBlock)) {
+      loseGame(nextBlock);
+      return;
+    }
+
+    if (!(nextBlock - 10)) {
+      posLeft += moveLeft;
+      posTop += moveTop;
+      moveIt();
     } else if (nextBlock === 11) {
       alert('TADA!!');
       gameBlocks[344] = 10;
       drawGamePlan(gameArea, gameBlocks);
       rockford = document.getElementById('baddie1');
       moveIt();
-
+    } else if (nextBlock === 90) {
+      portal(88, 409);
     } else {
       console.log('Block detected, cant move.');
     }
+  };
+  console.log('Moving Mickey Mos (Rockford) to initial spot.');
+  move(1, 1, 'down');
 
-      
-    };
-    console.log('Moving Mickey Mos (Rockford) to initial spot.');  
-    move(1, 1, 'down');
-
-
-    /**
-     * Keep track on keys pressed and move Rockford accordingly.
-    */
-   document.onkeydown = function(event) {
+  /**
+   * Keep track on keys pressed and move Rockford accordingly.
+   */
+  document.onkeydown = function (event) {
     let key;
     key = event.keyCode || event.which;
 
     const k = {
-      left:   37,
-      right:  39,
-      up:     38,
-      down:   40
-    }
-
-    switch(key) {
-      case k.left: move(-1, 0, 'left'); break;
-      case k.right: move(1, 0, 'right'); break;
-      case k.up: move(0, -1, 'up'); break;
-      case k.down: move(0, 1, 'down'); break; 
-      default: move(0, 0, 'down'); break;
+      left: 37,
+      right: 39,
+      up: 38,
+      down: 40,
     };
+
+    switch (key) {
+      case k.left:
+        move(-1, 0, 'left');
+        break;
+      case k.right:
+        move(1, 0, 'right');
+        break;
+      case k.up:
+        move(0, -1, 'up');
+        break;
+      case k.down:
+        move(0, 1, 'down');
+        break;
+      default:
+        move(0, 0, 'down');
+        break;
+    }
     console.log('Keypress: ' + event + ' key: ' + key + ' new pos: ' + rockford.offsetLeft + ', ' + rockford.offsetTop);
   };
 
-    console.log('Everything is ready.');  
+  console.log('Everything is ready.');
 });
