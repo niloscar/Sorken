@@ -3,6 +3,7 @@
  */
 window.addEventListener("DOMContentLoaded", function() {
   'use strict';
+  const score = {cheeseCount: 0, catEncounters: 0};
   let rockford = document.getElementById('baddie1'),
     area = document.getElementById('flash'),
     left = area.offsetLeft, // CSS positioning
@@ -18,6 +19,7 @@ window.addEventListener("DOMContentLoaded", function() {
      * This is the background for the game area.
      */
     gameArea = [
+      10,24,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
@@ -40,8 +42,7 @@ window.addEventListener("DOMContentLoaded", function() {
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,24,10
     ],
 
     gameBlocks = [
@@ -50,7 +51,7 @@ window.addEventListener("DOMContentLoaded", function() {
       19,10,19,19,10,19,19,19,19,19,19,10,19,10,10,10,10,10,10,19,19,19,10,19,
       19,10,19,10,10,10,10,19,10,10,10,10,19,10,10,10,10,10,10,10,10,19,10,19,
       19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
-      19,10,10,10,10,10,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,10,10,19,
+      19,20,10,10,10,10,10,10,10,10,10,10,20,19,10,10,10,10,10,10,10,10,10,19,
       19,19,19,19,19,19,19,19,19,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,
       19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
       19,10,10,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,19,19,19,19,10,19,
@@ -58,14 +59,14 @@ window.addEventListener("DOMContentLoaded", function() {
       19,19,19,19,10,19,19,19,19,19,10,19,10,10,10,10,10,10,10,19,10,19,19,19,
       19,10,10,10,10,10,10,19,10,10,10,19,10,10,10,10,10,10,10,10,10,10,10,19,
       19,10,19,19,19,19,10,19,10,19,19,19,10,10,10,10,10,10,10,19,19,19,10,19,
-      19,10,99,19,10,10,10,19,10,10,10,19,19,19,19,19,19,19,19,19,10,10,10,19,
+      19,10,99,19,20,10,10,19,10,10,10,19,19,19,19,19,19,19,19,19,10,10,10,19,
       19,19,19,19,19,19,10,19,19,19,10,10,10,10,10,10,10,10,10,10,10,19,19,19,
-      19,10,10,10,10,10,10,19,10,10,10,19,19,19,19,19,10,19,19,19,19,19,10,19,
+      19,10,10,10,10,10,10,19,10,10,10,19,19,19,19,19,10,19,19,19,19,19,20,19,
       19,10,19,19,19,19,19,19,10,19,19,19,10,10,99,19,10,10,10,10,10,19,10,19,
       19,10,10,10,10,10,10,10,10,10,10,10,10,19,19,19,19,19,19,19,10,10,10,19,
-      19,19,19,19,19,19,19,19,19,19,19,19,10,10,10,10,10,10,10,19,10,19,19,19,
+      19,19,19,19,19,19,19,19,19,19,19,19,10,10,10,10,10,10,20,19,10,19,19,19,
       19,10,10,10,10,10,10,19,10,10,10,19,19,19,19,19,10,19,19,19,10,19,99,19,
-      19,10,10,10,10,10,10,19,10,19,10,10,99,19,10,19,10,10,10,19,10,19,10,19,
+      19,10,10,10,10,10,10,19,10,19,10,10,99,19,20,19,10,10,10,19,10,19,10,19,
       19,10,10,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,10,19,10,10,10,19,
       19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,10,19,10,19,
       19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19
@@ -75,62 +76,77 @@ window.addEventListener("DOMContentLoaded", function() {
      * Draw the initial gameplan
     */
    function drawGamePlan(gameArea, gameBlocks) {
+
      let e;
      for(let i = 0; i < gameArea.length; i++) {
        e = document.createElement('div');
+       
        e.className = 'tile t' + gameArea[i] + ' b' + gameBlocks[i];
-
+      
        e.id = 'n' + i;
        area.appendChild(e);
       } 
+      console.log('Drawing gameplan.');
     };
-    console.log('Drawing gameplan.');  
     drawGamePlan(gameArea, gameBlocks);
-    
     
     /**
      * Move Rockford
     */
    let move = function(moveLeft, moveTop, which) {
      
-     function moveIt() {
-       rockford.style.left = (area.offsetLeft + posLeft*tileSize + tileSize/2) + 'px';
-       rockford.style.top  = (area.offsetTop + posTop*tileSize + tileSize/2) + 'px';      
-      // console.log("Moved to: " + rockford.style.left + "x" + rockford.style.top);
-      };
+      function moveIt() {
+        rockford.style.left = (posLeft * tileSize) + 'px';
+        rockford.style.top  = (posTop  * tileSize) + 'px';
+      }
       if(which) { rockford.className='baddie ' + which; }
       
       
       // First if means the baddie can movie
-
-      console.log((posLeft+moveLeft)+(posTop+moveTop)*gridSize);
-
-      if(!(gameBlocks[(posLeft+moveLeft)+(posTop+moveTop)*gridSize]-10)) {
+      
+      let tilePosition = (posLeft + moveLeft) + (posTop + moveTop) * gridSize;
+      console.log(tilePosition);
+      if (!(gameBlocks[tilePosition]-10)) {
+        // If possible to move.
         posLeft += moveLeft; 
         posTop  += moveTop;
         moveIt();
-      } else if ((posLeft+moveLeft)+(posTop+moveTop)*gridSize === 11) {
-        alert('TADA!!');
-        gameBlocks[344] = 10;
-        drawGamePlan(gameArea, gameBlocks);
-        rockford = document.getElementById('baddie1');
-        moveIt();
-      } else if ((posLeft+moveLeft)+(posTop+moveTop)*gridSize === 457) {
         
-        // Cheese
-        alert('TADA!!');
-        gameBlocks[457] = 10;
-        drawGamePlan(gameArea, gameBlocks);
-        rockford = document.getElementById('baddie1');
-        moveIt();
-      } else {  // Else means the baddie cannot move because of a wall
-        console.log('Block detected, cant move.');
-      }
+      } else {
+        // If not possible to move:
+        switch(tilePosition) {
+          case 121:
+          case 132:
+          case 316:
+          case 382:
+          case 450:
+          case 494:
+            const wrap = area.closest('#shake-wrap');
+        
+            updateScore(score.cheeseCount++);
+            wrap.classList.add('eating');
 
+            wrap.addEventListener('animationend', () => {
+              wrap.classList.remove('eating');
+
+              area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan, except for baddie.
+              gameBlocks[tilePosition] = 10;
+              gameArea[tilePosition] = 28;
+              drawGamePlan(gameArea, gameBlocks);
+              rockford = document.getElementById('baddie1');
+              moveIt();
+              
+            }, { once: true });
+            break;
+
+          default:
+            console.log('Block detected, cant move.');
+        }
+      }
       
     };
-    console.log('Moving Mickey Mos (Rockford) to initial spot.');  
-    move(1, 1, 'down');
+    console.log('Flyttar sork till utgångsposition.');  
+    move(1, 0, 'down');
     
 
     function xyToTile (x, y) {
@@ -160,6 +176,15 @@ window.addEventListener("DOMContentLoaded", function() {
     };
     console.log('Keypress: ' + event + ' key: ' + key + ' new pos: ' + rockford.offsetLeft + ', ' + rockford.offsetTop);
   };
+
+  function updateScore(val) {
+    const scoreBoard = document.getElementById('scoreboard');
+    const scoreCheeses = scoreBoard?.querySelector('#score-cheeses');
+    const scoreCats = scoreBoard?.querySelector('#score-cats');
+
+    scoreCheeses.innerText = (score.cheeseCount);
+    scoreCats.innerText = (score.catEncounters);
+  }
 
     console.log('Everything is ready.');  
 });
