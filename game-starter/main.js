@@ -306,8 +306,71 @@ window.addEventListener('DOMContentLoaded', function () {
 			if ((event.keyCode || event.which) === 32) location.reload();
 		}
 	}
-	
+
+// Cats moving around
+
+(function startMovingCats() {
+
+  const CAT_IDS = [55, 56, 57, 58, 59];
+  const EMPTY = 10;
+  const INTERVAL = 700;
+
+  function getCatIndexes() {
+    return gameBlocks
+      .map((v, i) => CAT_IDS.includes(v) ? i : -1)
+      .filter(i => i !== -1);
+  }
+
+  function neighbors(index) {
+    const x = index % gridSize;
+    const y = Math.floor(index / gridSize);
+
+    return [
+      [x + 1, y],
+      [x - 1, y],
+      [x, y + 1],
+      [x, y - 1],
+    ]
+      .filter(([nx, ny]) =>
+        nx >= 0 && ny >= 0 &&
+        nx < gridSize && ny < gridSize
+      )
+      .map(([nx, ny]) => nx + ny * gridSize);
+  }
+
+  function moveCats() {
+    if (gameOver) return;
+
+    const cats = getCatIndexes();
+
+    cats.forEach(catIndex => {
+      const moves = neighbors(catIndex)
+        .filter(i => gameBlocks[i] === EMPTY);
+
+      if (!moves.length) return;
+
+      const target = moves[Math.floor(Math.random() * moves.length)];
+      const catValue = gameBlocks[catIndex];
+
+      gameBlocks[catIndex] = EMPTY;
+      gameBlocks[target] = catValue;
+
+      // Collision with player
+      if (target === posLeft + posTop * gridSize) {
+        loseGame(catValue);
+      }
+    });
+
+    area.querySelectorAll('.tile').forEach(t => t.remove());
+    drawGamePlan(gameArea, gameBlocks);
+  }
+
+  setInterval(moveCats, INTERVAL);
+
+})();
+
   	console.log('Everything is ready.');  
 });
 
 
+//  second merge haha
