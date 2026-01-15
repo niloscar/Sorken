@@ -351,6 +351,8 @@ body {
  * 
  */
 .tile, .t, .block, .b{width:32px;height:32px;float:left;background-repeat:no-repeat;}
+.t10{background-image:url(img/tiles/floor/grass_0_old.png);}
+.t19{background-image:url(img/tiles/wall/metal_wall.png);}
 .t12{background-image:url(img/tiles/floor/grass_0_old.png);}
 .t13{background-image:url(img/tiles/floor/grass_1_old.png);}
 .t14{background-image:url(img/tiles/floor/grass_2_old.png);}
@@ -358,11 +360,17 @@ body {
 .t16{background-image:url(img/tiles/floor/grass_flowers_blue_3_old.png);}
 .t17{background-image:url(img/tiles/floor/grass_flowers_yellow_3_old.png);}
 .t18{background-image:url(img/tiles/floor/grass_north_old.png);}
-.t19{background-image:url(img/tiles/floor/grass_northwest_old.png);}
+/* .t19{background-image:url(img/tiles/floor/grass_northwest_old.png);} */
 .t20{background-image:url(img/tiles/floor/grass_west_old.png);}
 .t21{background-image:url(img/tiles/floor/grass_full_old.png);}
 .t22{background-image:url(img/tiles/floor/grass_southwest_old.png);}
 .t23{background-image:url(img/tiles/floor/grass_south_old.png);}
+.t11{
+  background-image:url(img/tiles/floor/grass_0_old-hole.png);
+  background-position: center;
+  background-size: cover;
+} /* Sorkhål */
+.t25{background-image:url(img/tiles/floor/grass_south_old.png);}
 
 .b11{background-image:url(img/tiles/wall/metal_wall.png);}
 .b12{background-image:url(img/tiles/wall/crystal_wall02.png);}
