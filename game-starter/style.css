@@ -271,8 +271,17 @@ tfoot {
  * 
  */
 body {
-  max-width: 940px;
-  margin: 8px auto;
+  background-image: url(img/bg.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 /** --------------------------------------------------------------
  * Boxes.
@@ -284,12 +293,7 @@ body {
   min-height: 10em;
   border: 1px solid #999;
   padding: 1em;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  -webkit-box-shadow: 5px 5px 5px 5px #555;
-  -moz-box-shadow: 5px 5px 5px 5px #555;
-  box-shadow: 5px 5px 5px 5px #555;
+  box-shadow: 0 10px 10px 5px rgba(0,0,0,.25);
 }
 /** --------------------------------------------------------------
  * Footer.
