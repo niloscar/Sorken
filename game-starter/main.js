@@ -120,18 +120,39 @@ window.addEventListener("DOMContentLoaded", function() {
     console.log('Drawing gameplan.');  
     drawGamePlan(gameArea, gameBlocks);
     
-        /**
-     * Cats
-     */
-    const catBlocks = new Set([55, 56, 57, 58, 59]);
-      let gameOver = false;
+/**
+ * Cats
+ */
+const catBlocks = new Set([55, 56, 57, 58, 59]);
+let gameOver = false;
 
-      function loseGame(catValue) {
-        gameOver = true;
-        alert(`GAME OVER 💀 Råttan blev uppäten av en katt (block ${catValue})!`);
-        location.reload();
-      }
-    
+// MEOW (läggs UTANFÖR loseGame, så den finns innan den används)
+const catSounds = {
+  55: new Audio("sounds/cat-meow-401729.mp3"),
+  56: new Audio("sounds/cat-meow-297927.mp3"),
+  57: new Audio("sounds/cat-meowing-type-02-293290.mp3"),
+  58: new Audio("sounds/cat-meow-6226.mp3"),
+  59: new Audio("sounds/cat-meowing-type-01-293291.mp3")
+};
+
+Object.values(catSounds).forEach(a => {
+  a.preload = "auto";
+  a.volume = 0.8;
+});
+
+function loseGame(catValue) {
+  gameOver = true;
+
+  const sound = catSounds[catValue];
+  if (sound) {
+    sound.currentTime = 0;
+    sound.play().catch(err => console.log("Audio blocked:", err));
+  }
+
+  alert(`GAME OVER 💀 Du blev uppäten av en katt!`);
+
+location.reload();}
+
     /**
      * Move Rockford
     */
