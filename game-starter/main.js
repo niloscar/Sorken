@@ -215,7 +215,7 @@ window.addEventListener('DOMContentLoaded', function () {
 		key = event.keyCode || event.which;
 
 		if (!gameStarted) {
-			timer();
+			timer(true);
 			gameStarted = true;
 		}
 
@@ -260,29 +260,41 @@ window.addEventListener('DOMContentLoaded', function () {
 		scoreCats.innerText = (score.catEncounters);
 	}
 
-	function timer() {
+	// Set the timelimit argument in mm:ss format.
+	((timeLimit = '1:00') => {
 		const timer = document.querySelector("#timer > span");
 		if (!timer) return;
 
+		timer.innerText = timeLimit;
+	})();
+
+	function timer(action) {
+		const timer = document.querySelector("#timer > span");
+		if (!timer) return;
+
+ 		let [minutes, seconds] = timer.innerText.trim().split(":");
+		const totSeconds = (parseInt(minutes, 10) * 60) + parseInt(seconds, 10);
+		const end = Date.now() + totSeconds * 1000;
+
 		const now = new Date();
-		let countDownTime = new Date(now.getTime() + 2 * 60 * 1000);
+		let countDownTime = new Date(now.getTime() + minutes * (seconds == 0 ? 60 : seconds) * 1000);
 
-		let x = setInterval(function() {
+		const x = setInterval(() => {
+			const msLeft = Math.max(0, end - Date.now());
 
-			let distance = countDownTime - new Date();
+			const secsLeft = Math.ceil(msLeft / 1000);
+			const minutes = Math.floor(secsLeft / 60);
+			const seconds = secsLeft % 60;
 
-			let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-			let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+			timer.innerHTML = `${minutes}:${String(seconds).padStart(2, "0")}`;
 
-			timer.innerHTML = minutes + ":" + seconds;
-
-			if (distance < 0) {
+			if (msLeft === 0) {
 				clearInterval(x);
-				timer.classList.add('timesup');
-				timer.innerHTML = "TIDEN ÄR UTE!";
+				timer.classList.add("timesup");
+				gameAlert("TIDEN ÄR UTE!");
 			}
-		}, 1000);
-  	}
+		}, 250);
+	}
 
 	function gameAlert(message) {
 		const el = document.createElement('div');
