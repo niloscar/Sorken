@@ -369,12 +369,13 @@ body {
 .t21{background-image:url(img/tiles/floor/grass_full_old.png);}
 .t22{background-image:url(img/tiles/floor/grass_southwest_old.png);}
 .t23{background-image:url(img/tiles/floor/grass_south_old.png);}
-.t11{
+
+/* Sorkhål */
+.b99{
   background-image:url(img/tiles/floor/grass_0_old-hole.png);
   background-position: center;
   background-size: cover;
-} /* Sorkhål */
-.t25{background-image:url(img/tiles/floor/grass_south_old.png);}
+}
 
 .b11{background-image:url(img/tiles/wall/metal_wall.png);}
 .b12{background-image:url(img/tiles/wall/crystal_wall02.png);}
