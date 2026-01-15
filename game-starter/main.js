@@ -244,5 +244,54 @@ window.addEventListener('DOMContentLoaded', function () {
     console.log('Keypress: ' + event + ' key: ' + key + ' new pos: ' + rockford.offsetLeft + ', ' + rockford.offsetTop);
   };
 
+  /**
+ * Random walking cats
+ */
+function moveCatsRandomly() {
+  if (gameOver) return;
+
+  const directions = [
+    { dx: -1, dy: 0 }, // left
+    { dx: 1, dy: 0 },  // right
+    { dx: 0, dy: -1 }, // up
+    { dx: 0, dy: 1 },  // down
+  ];
+
+  gameBlocks.forEach((block, index) => {
+    if (!catBlocks.has(block)) return;
+
+    const dir = directions[Math.floor(Math.random() * directions.length)];
+    const x = index % gridSize;
+    const y = Math.floor(index / gridSize);
+
+    const nx = x + dir.dx;
+    const ny = y + dir.dy;
+
+    if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) return;
+
+    const nextIndex = nx + ny * gridSize;
+    const targetBlock = gameBlocks[nextIndex];
+
+    // Only move onto empty tiles (10)
+    if (targetBlock === 10) {
+      gameBlocks[nextIndex] = block;
+      gameBlocks[index] = 10;
+
+      // If cat walks onto player → lose
+      if (nx === posLeft && ny === posTop) {
+        loseGame(block);
+      }
+    }
+  });
+
+  drawGamePlan(gameArea, gameBlocks);
+}
+
+// ⏱️ 700ms interval
+setInterval(moveCatsRandomly, 700);
+
+
   console.log('Everything is ready.');
 });
+
+
