@@ -12,6 +12,7 @@ window.addEventListener("DOMContentLoaded", function() {
     posTop = 0,     // Steps up/down
     tileSize = 32,  // Tile size in height/width -> 32px
     gridSize = 24,  // Grid size 24x24
+    gameStarted = false,
     
     
 
@@ -94,7 +95,7 @@ window.addEventListener("DOMContentLoaded", function() {
      * Move Rockford
     */
    let move = function(moveLeft, moveTop, which) {
-     
+    
       function moveIt() {
         rockford.style.left = (posLeft * tileSize) + 'px';
         rockford.style.top  = (posTop  * tileSize) + 'px';
@@ -157,6 +158,10 @@ window.addEventListener("DOMContentLoaded", function() {
      * Keep track on keys pressed and move Rockford accordingly.
     */
    document.onkeydown = function(event) {
+    if (!gameStarted) {
+      timer();
+      gameStarted = true;
+    }
     let key;
     key = event.keyCode || event.which;
 
@@ -186,5 +191,34 @@ window.addEventListener("DOMContentLoaded", function() {
     scoreCats.innerText = (score.catEncounters);
   }
 
-    console.log('Everything is ready.');  
+  function timer() {
+    const timer = document.querySelector("#timer > span");
+    if (!timer) return;
+
+    const now = new Date();
+    let countDownDate = new Date(now.getTime() + 2 * 60 * 1000);
+
+    console.log(countDownDate);
+
+    // Update the count down every 1 second
+    let x = setInterval(function() {
+
+      // Find the distance between now and the count down date
+      let distance = countDownDate - new Date();
+
+      let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      let seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      timer.innerHTML = minutes + ":" + seconds;
+
+      // If the count down is finished, write some text
+      if (distance < 0) {
+        clearInterval(x);
+        timer.classList.add('timesup');
+        timer.innerHTML = "TIDEN ÄR UTE!";
+      }
+    }, 1000);
+  }
+
+  console.log('Everything is ready.');  
 });
