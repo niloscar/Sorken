@@ -272,8 +272,17 @@ tfoot {
  * 
  */
 body {
-  max-width: 940px;
-  margin: 8px auto;
+  background-image: url(img/bg2.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 /** --------------------------------------------------------------
  * Boxes.
@@ -283,14 +292,11 @@ body {
   margin: 2em auto;
   background-color: rgba(238, 238, 238, 0.95);
   min-height: 10em;
+  min-width: 768px;
   border: 1px solid #999;
-  padding: 1em;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  -webkit-box-shadow: 5px 5px 5px 5px #555;
-  -moz-box-shadow: 5px 5px 5px 5px #555;
-  box-shadow: 5px 5px 5px 5px #555;
+  padding: 0;
+  box-shadow: 0 10px 10px 5px rgba(0,0,0,.25);
+  
 }
 /** --------------------------------------------------------------
  * Footer.
@@ -314,11 +320,73 @@ body {
 /**
  * Here comes specific style for a certain test program.
  */
-#flash {
+#scoreboard, #timer {
+  background-color: rgba(0,0,0,.66);
+  color: #fff;
+  padding: 1rem;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#scoreboard {
+  bottom: 0;
+  padding-top: 0;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  display: flex;
+  gap: 1.5rem;
+
+  & span:not(.score) {
+    padding-right: 1rem;
+  }
+
+  & span.score {
+    position: absolute;
+    font-weight: 800;
+    transition: transform .5s ease, color .25s ease;
+    margin-left: .25em;
+  }
+}
+
+#timer {
+  top: -1rem;
+  padding-bottom: 0;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+
+  & span {
+    font-weight: 800;
+    font-size: 2rem;
+    line-height: 2rem;
+
+    &.timesup {
+      transform: scale(500%) rotate(-22deg);
+      color: red;
+    }
+  }
+}
+
+#shake-wrap {
+  position: relative;
+  &.eating { 
+    animation: eating 350ms linear; 
+    
+    & span#score-cheeses {
+      transform: scale(500%) rotate(-22deg);
+      color: red;
+    }
+  }
+}
+#flash{
+  position: relative;
   width: 768px;
   height: 768px;
+  border: 1rem solid rgba(0,0,0,.66);
+  background-color: transparent;
+  border-radius: 4px;
 }
-#baddie1 {
+.baddie{
   position: absolute;
 }
 .baddie {
@@ -396,50 +464,38 @@ body {
   background-image: url(img/tiles/floor/grass_north_old.png);
 }
 /* .t19{background-image:url(img/tiles/floor/grass_northwest_old.png);} */
-.t20 {
-  background-image: url(img/tiles/floor/grass_west_old.png);
-}
-.t21 {
-  background-image: url(img/tiles/floor/grass_full_old.png);
-}
-.t22 {
-  background-image: url(img/tiles/floor/grass_southwest_old.png);
-}
-.t23 {
-  background-image: url(img/tiles/floor/grass_south_old.png);
-}
-.t11 {
-  background-image: url(img/tiles/floor/grass_0_old-hole.png);
+.t20{background-image:url(img/tiles/floor/grass_west_old.png);}
+.t21{background-image:url(img/tiles/floor/grass_full_old.png);}
+.t22{background-image:url(img/tiles/floor/grass_southwest_old.png);}
+.t23{background-image:url(img/tiles/floor/grass_south_old.png);}
+
+/* Sorkhål */
+.b99{
+  background-image:url(img/tiles/floor/grass_0_old-hole.png);
   background-position: center;
   background-size: cover;
-} /* Sorkhål */
-.t25 {
-  background-image: url(img/tiles/floor/grass_south_old.png);
 }
 
-.b11 {
-  background-image: url(img/tiles/wall/metal_wall.png);
-}
-.b12 {
-  background-image: url(img/tiles/wall/crystal_wall02.png);
-}
-.b13 {
-  background-image: url(img/tiles/wall/mirrored_wall_old.png);
-}
-.b14 {
-  background-image: url(img/tiles/wall/green_crystal_wall.png);
-  background-color: green;
-}
-.b17 {
-  background-image: url(img/tiles/passage/open_door.png);
-  background-color: #bbb;
-}
-.b18 {
-  background-image: url(img/tiles/passage/closed_door.png);
-}
-.b19 {
-  background-image: url(img/tiles/wall/brick_brown-vines_1.png);
-}
+/* Start/mål-pilar */
+ .t24 {background-image:url(img/tiles/floor/grass_arrow_down.png);} /* Down */
+ .t25 {background-image:url(img/tiles/floor/grass_arrow_right.png);} /* Right */
+
+
+
+.b11{background-image:url(img/tiles/wall/metal_wall.png);}
+.b12{background-image:url(img/tiles/wall/crystal_wall02.png);}
+.b13{background-image:url(img/tiles/wall/mirrored_wall_old.png);}
+.b14{background-image:url(img/tiles/wall/green_crystal_wall.png);background-color:green;}
+.b17{background-image:url(img/tiles/passage/open_door.png);background-color:#bbb;}
+.b18{background-image:url(img/tiles/passage/closed_door.png);}
+.b19{background-image:url(img/tiles/wall/brick_brown-vines_1.png);}
+
+ /* Ost */
+ .b20 {background-image:url(img/tiles/floor/grass_0_old-cheese.png);} /* Hel ost */
+ .b21 {background-image:url(img/tiles/floor/grass_0_old-cheese-halfeaten.png);} /* Halv ost */
+ .t28 {background-image:url(img/tiles/floor/grass_0_old-cheese-eaten.png);} /* Uppäten ost. OBS, notera class! */
+
+
 
 /* Cats overlay on top of grass */
 .b55,
@@ -486,4 +542,19 @@ body {
 .b90 {
   background-image: url(sorken.img/expired_portal.png),
     url(img/tiles/floor/grass_1_old.png);
+}
+
+@keyframes eating {
+  0%   { transform: translate(0px, 0px) rotate(0deg)     scale(1.000) skew(0deg, 0deg); }
+
+  14%  { transform: translate(-1px,  1px) rotate(-0.7deg)  scale(1.004) skew( 0.10deg, -0.05deg); }
+  28%  { transform: translate( 2px, -1px) rotate( 0.6deg)  scale(1.008) skew(-0.10deg,  0.05deg); }
+  42%  { transform: translate(-2px,  1px) rotate(-1.0deg)  scale(1.014) skew( 0.10deg, -0.05deg); }
+
+  55%  { transform: translate( 1px,  2px) rotate( 0.8deg)  scale(1.020) skew(-0.10deg,  0.08deg); } /* max */
+
+  70%  { transform: translate(-2px, -1px) rotate(-1.1deg)  scale(1.012) skew( 0.10deg, -0.08deg); }
+  84%  { transform: translate( 2px,  1px) rotate( 0.7deg)  scale(1.006) skew(-0.08deg,  0.06deg); }
+
+  100% { transform: translate(0px, 0px) rotate(0deg)     scale(1.000) skew(0deg, 0deg); }
 }
