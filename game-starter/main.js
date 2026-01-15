@@ -6,11 +6,14 @@ window.addEventListener('DOMContentLoaded', function () {
   let rockford = document.getElementById('baddie1'),
     area = document.getElementById('flash'),
     left = area.offsetLeft, // CSS positioning
-    top = area.offsetTop,
-    posLeft = 0, // Steps right/left
-    posTop = 0, // Steps up/down
-    tileSize = 32, // Tile size in height/width -> 32px
-    gridSize = 24, // Grid size 24x24
+    top  = area.offsetTop,
+    posLeft = 0,    // Steps right/left
+    posTop = 0,     // Steps up/down
+    tileSize = 32,  // Tile size in height/width -> 32px
+    gridSize = 24,  // Grid size 24x24
+  
+
+
     /**
      * This is the background for the game area.
      */
@@ -80,106 +83,153 @@ window.addEventListener('DOMContentLoaded', function () {
     // ];
 
     gameBlocks = [
-      19, 10, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-      19, 19, 19, 19, 19, 19, 19, 10, 10, 10, 10, 19, 10, 10, 10, 10, 10, 10,
-      19, 10, 10, 10, 10, 10, 10, 19, 20, 10, 10, 19, 19, 10, 19, 19, 10, 19,
-      10, 19, 19, 19, 19, 10, 19, 10, 19, 19, 19, 19, 10, 19, 10, 19, 10, 19,
-      19, 10, 19, 10, 10, 10, 10, 19, 10, 10, 10, 10, 10, 10, 10, 10, 10, 19,
-      10, 10, 10, 19, 10, 19, 19, 10, 19, 10, 19, 19, 10, 19, 10, 19, 19, 19,
-      19, 19, 10, 19, 19, 19, 10, 19, 10, 19, 10, 19, 19, 10, 10, 10, 10, 10,
-      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 19,
-      19, 19, 19, 19, 19, 19, 10, 19, 19, 19, 10, 19, 19, 19, 19, 19, 10, 19,
-      19, 19, 19, 19, 10, 19, 19, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 10,
-      10, 10, 10, 19, 10, 10, 10, 10, 10, 10, 10, 19, 19, 10, 19, 19, 19, 19,
-      10, 19, 10, 19, 19, 19, 19, 19, 10, 19, 19, 19, 19, 19, 10, 19, 10, 19,
-      19, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-      10, 19, 10, 10, 10, 19, 19, 19, 19, 19, 19, 19, 10, 19, 19, 19, 10, 19,
-      19, 19, 19, 19, 10, 19, 19, 19, 10, 19, 19, 19, 19, 10, 10, 10, 10, 10,
-      10, 19, 10, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 10, 10, 10, 10, 19,
-      19, 10, 19, 19, 19, 19, 10, 19, 10, 19, 19, 19, 19, 19, 10, 19, 19, 19,
-      19, 19, 10, 19, 10, 19, 19, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-      10, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 19, 19, 19, 19, 19, 19, 19,
-      10, 19, 19, 19, 10, 19, 19, 19, 19, 19, 10, 19, 19, 19, 10, 19, 19, 19,
-      19, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 10, 10, 10, 10, 19, 10, 10,
-      10, 10, 10, 10, 10, 19, 19, 10, 19, 19, 19, 19, 10, 19, 10, 19, 19, 19,
-      19, 19, 10, 19, 19, 19, 19, 19, 10, 19, 10, 19, 19, 10, 10, 10, 10, 10,
-      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 19,
-      19, 19, 19, 19, 19, 19, 10, 19, 19, 19, 10, 19, 19, 19, 19, 19, 10, 19,
-      19, 19, 10, 19, 19, 19, 19, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 10,
-      10, 10, 10, 19, 10, 10, 10, 10, 10, 10, 10, 19, 19, 10, 19, 19, 19, 19,
-      10, 19, 10, 19, 19, 19, 19, 19, 10, 19, 19, 19, 19, 19, 10, 19, 10, 19,
-      19, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-      10, 10, 10, 10, 10, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
-      19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 10, 19, 19, 19, 19, 19, 19, 19,
-      19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 10, 19,
+      19,10,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
+      19,10,10,10,10,19,10,10,10,10,10,10,19,10,10,10,10,10,10,19,10,10,10,19,
+      19,10,19,19,10,19,10,19,19,19,19,10,19,10,19,19,19,19,10,19,10,19,10,19,
+      19,10,19,10,10,10,10,19,55,10,10,10,10,10,10,10,10,19,10,10,10,19,10,19,
+      19,10,19,10,19,19,10,19,10,19,19,19,19,19,10,19,19,19,10,19,10,19,10,19,
+      19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,56,10,10,10,19,
+      19,19,19,19,19,19,10,19,19,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,
+      19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
+      19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
+      19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,10,10,10,19,
+      19,19,19,19,19,19,10,19,19,19,10,19,19,19,19,19,10,19,19,19,10,19,19,19,
+      19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
+      19,10,19,19,19,19,10,19,10,19,19,19,19,19,58,19,19,19,19,19,10,19,10,19,
+      19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,10,10,10,19,
+      19,19,19,19,19,19,10,19,19,19,10,19,19,19,19,19,10,19,19,19,10,19,19,19,
+      19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
+      19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
+      19,10,10,10,57,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,59,10,10,19,
+      19,19,19,19,19,19,10,19,19,19,10,19,19,19,19,19,10,19,19,19,10,19,19,19,
+      19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
+      19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
+      19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,
+      19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19,
+      19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19
     ];
 
-  /**
-   * Draw the initial gameplan
-   */
-  function drawGamePlan(gameArea, gameBlocks) {
+    /**
+     * Draw the initial gameplan
+    */
+   function drawGamePlan(gameArea, gameBlocks) {
+       area.querySelectorAll('.tile').forEach(tile => tile.remove());
+    
     let e;
-    for (let i = 0; i < gameArea.length; i++) {
-      e = document.createElement('div');
-      e.className = 'tile t' + gameArea[i] + ' b' + gameBlocks[i];
+     for(let i = 0; i < gameArea.length; i++) {
+       e = document.createElement('div');
+       e.className = 'tile t' + gameArea[i] + ' b' + gameBlocks[i];
 
-      e.id = 'n' + i;
-      area.appendChild(e);
-    }
+       e.id = 'n' + i;
+       area.appendChild(e);
+      } 
+    };
+    console.log('Drawing gameplan.');  
+    drawGamePlan(gameArea, gameBlocks);
+    
+/**
+ * Cats
+ */
+const catBlocks = new Set([55, 56, 57, 58, 59]);
+let gameOver = false;
+
+// MEOW (läggs UTANFÖR loseGame, så den finns innan den används)
+const catSounds = {
+  55: new Audio("sounds/cat-meow-401729.mp3"),
+  56: new Audio("sounds/cat-meow-297927.mp3"),
+  57: new Audio("sounds/cat-meowing-type-02-293290.mp3"),
+  58: new Audio("sounds/cat-meow-6226.mp3"),
+  59: new Audio("sounds/cat-meowing-type-01-293291.mp3")
+};
+
+Object.values(catSounds).forEach(a => {
+  a.preload = "auto";
+  a.volume = 0.8;
+});
+
+function loseGame(catValue) {
+  gameOver = true;
+
+  const sound = catSounds[catValue];
+  if (sound) {
+    sound.currentTime = 0;
+    sound.play().catch(err => console.log("Audio blocked:", err));
   }
-  console.log('Drawing gameplan.');
-  drawGamePlan(gameArea, gameBlocks);
 
-  /**
-   * Move Rockford
-   */
-  let move = function (moveLeft, moveTop, which) {
-    function moveIt() {
-      rockford.style.left =
-        area.offsetLeft + posLeft * tileSize + tileSize / 2 + 'px';
-      rockford.style.top =
-        area.offsetTop + posTop * tileSize + tileSize / 2 + 'px';
+  alert(`GAME OVER 💀 Du blev uppäten av en katt!`);
+
+location.reload();}
+
+    /**
+     * Move Rockford
+    */
+   let move = function(moveLeft, moveTop, which) {
+     
+     function moveIt() {
+       rockford.style.left = (area.offsetLeft + posLeft*tileSize + tileSize/2) + 'px';
+       rockford.style.top  = (area.offsetTop + posTop*tileSize + tileSize/2) + 'px';      
       //  console.log("
       // Moved to: " + rockford.style.left + "x" + rockford.style.top);
-    }
-
-    function portal(portal1, portal2) {
+      };
+     
+     function portal(portal1, portal2) {
       // Make a pair of gameblocks into two-way portals.
-      // (n.index of portal 1, n.index portal 2, block number)
+      // (n.index of portal 1, n.index portal 2)
       let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize; // position of enter portal/player
       let targetIndex = portalIndex === portal1 ? portal2 : portal1; // position of portal player exits
       posLeft = targetIndex % gridSize; // calculates the new column position of player - Had to leverage AI for this calculation ._.
       posTop = Math.floor(targetIndex / gridSize); // calculates the new row position of player
       moveIt();
     }
+     
+      if(which) { rockford.className='baddie ' + which; }
+      
+           /**
+     * Cats
+    */
+      if (gameOver) return;
 
-    if (which) {
-      rockford.className = 'baddie ' + which;
-    }
+      const nextIndex = (posLeft + moveLeft) + (posTop + moveTop) * gridSize;
+      if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
 
-    // First if means the baddie can movie
-    if (
-      !(gameBlocks[posLeft + moveLeft + (posTop + moveTop) * gridSize] - 10)
-    ) {
+      const nextBlock = gameBlocks[nextIndex];
+
+      // 🐱 KATT = FÖRLUST
+      if (catBlocks.has(nextBlock)) {
+        loseGame(nextBlock);
+        return;
+      }
+
+        if (!(nextBlock - 10)) {
       posLeft += moveLeft;
-      posTop += moveTop;
+      posTop  += moveTop;
       moveIt();
-    } else if (
-      gameBlocks[posLeft + moveLeft + (posTop + moveTop) * gridSize] === 20 //PORTAL
-    ) {
+
+    } else if (nextBlock === 11) {
+      alert('TADA!!');
+      gameBlocks[344] = 10;
+      drawGamePlan(gameArea, gameBlocks);
+      rockford = document.getElementById('baddie1');
+      moveIt();
+
+    }else if (
+      (nextBlock === 20) { //Portal 
       portal(44, 142);
-    } else {
-      // Else means the baddie cannot move because of a wall
+     
+    }else {
       console.log('Block detected, cant move.');
     }
-  };
-  console.log('Moving Mickey Mos (Rockford) to initial spot.');
-  move(1, 1, 'down');
 
-  /**
-   * Keep track on keys pressed and move Rockford accordingly.
-   */
-  document.onkeydown = function (event) {
+      
+    };
+    console.log('Moving Mickey Mos (Rockford) to initial spot.');  
+    move(1, 1, 'down');
+
+
+    /**
+     * Keep track on keys pressed and move Rockford accordingly.
+    */
+   document.onkeydown = function(event) {
     let key;
     key = event.keyCode || event.which;
 
@@ -219,5 +269,5 @@ window.addEventListener('DOMContentLoaded', function () {
     );
   };
 
-  console.log('Everything is ready.');
+    console.log('Everything is ready.');  
 });
