@@ -124,11 +124,14 @@ window.addEventListener("DOMContentLoaded", function () {
     a.volume = 0.8;
   });
 
-  // katt eller örn?
-
   const eagleSound = new Audio("/game-starter/sounds/eagle.mp3");
-  eagleSound.preload = "auto";
-  eagleSound.volume = 0.9;
+    eagleSound.preload = "auto";
+    eagleSound.volume = 0.9;
+
+  const eagleSpawnSound = new Audio("sounds/eagle.mp3");
+    eagleSpawnSound.preload = "auto";
+    eagleSpawnSound.volume = 0.9;
+
 
   // katt eller örn?
 function loseGame(reason, soundId = null) {
@@ -529,7 +532,11 @@ function loseGame(reason, soundId = null) {
 
     eagleAlert("A WILD EAGLE APPEARS!");
 
+    eagleSpawnSound.currentTime = 0;
+    eagleSpawnSound.play().catch(() => {});
+
     startEagle();
+
   }
 
   function startEagle() {
