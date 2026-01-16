@@ -555,8 +555,8 @@ body {
   content: "";
   display: block;
   background: radial-gradient(rgba(150,150,0,0.05) 10%, rgba(0,0,0,.95) 25%);
-  width: 1536px;
-  height: 1536px;
+  width: calc(var(--tileSize) * 24 * 2);
+  height: calc(var(--tileSize) * 24 * 2);
   position: absolute;
   left: 16px;
   top: 16px;
