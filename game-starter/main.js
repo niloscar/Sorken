@@ -326,66 +326,67 @@ window.addEventListener('DOMContentLoaded', function () {
 		}
 	}
 
-	// Cats moving around
+	// Cats moving around (SMART CATS!)
 
 	(function startMovingCats() {
 
-	const CAT_IDS = [55, 56, 57, 58, 59];
-	const EMPTY = 10;
-	const INTERVAL = 700;
+		const CAT_IDS = [55,56,57,58,59];
+		const EMPTY = 10;
+		const INTERVAL = 600;
+		const HUNT_RANGE = 7;
 
-	function getCatIndexes() {
-		return gameBlocks
-		.map((v, i) => CAT_IDS.includes(v) ? i : -1)
-		.filter(i => i !== -1);
-	}
+		const playerIndex = () => posLeft + posTop * gridSize;
 
-	function neighbors(index) {
-		const x = index % gridSize;
-		const y = Math.floor(index / gridSize);
+		const dist = (a,b) => {
+			const ax = a % gridSize, ay = Math.floor(a / gridSize);
+			const bx = b % gridSize, by = Math.floor(b / gridSize);
+			return Math.abs(ax - bx) + Math.abs(ay - by);
+		};
 
-		return [
-		[x + 1, y],
-		[x - 1, y],
-		[x, y + 1],
-		[x, y - 1],
-		]
-		.filter(([nx, ny]) =>
-			nx >= 0 && ny >= 0 &&
-			nx < gridSize && ny < gridSize
-		)
-		.map(([nx, ny]) => nx + ny * gridSize);
-	}
+		const neighbors = (i) => {
+			const x = i % gridSize, y = Math.floor(i / gridSize);
+			return [
+				[x+1,y],[x-1,y],[x,y+1],[x,y-1]
+			]
+			.filter(([nx,ny]) => nx>=0 && ny>=0 && nx<gridSize && ny<gridSize)
+			.map(([nx,ny]) => nx + ny * gridSize)
+			.filter(n => gameBlocks[n] === EMPTY || n === playerIndex());
+		};
 
-	function moveCats() {
-		if (gameOver) return;
+		function moveCats() {
+			if (gameOver) return;
 
-		const cats = getCatIndexes();
+			const cats = gameBlocks
+				.map((v,i)=>CAT_IDS.includes(v)?i:-1)
+				.filter(i=>i!==-1);
 
-		cats.forEach(catIndex => {
-		const moves = neighbors(catIndex)
-			.filter(i => gameBlocks[i] === EMPTY);
+			cats.forEach(catIndex => {
+				const pIndex = playerIndex();
+				const opts = neighbors(catIndex);
+				if (!opts.length) return;
 
-		if (!moves.length) return;
+				let target;
 
-		const target = moves[Math.floor(Math.random() * moves.length)];
-		const catValue = gameBlocks[catIndex];
+				if (dist(catIndex, pIndex) <= HUNT_RANGE) {
+					target = opts.reduce((best,cur)=>
+						dist(cur,pIndex) < dist(best,pIndex) ? cur : best
+					);
+				} else {
+					target = opts[Math.floor(Math.random()*opts.length)];
+				}
 
-		gameBlocks[catIndex] = EMPTY;
-		gameBlocks[target] = catValue;
+				const catValue = gameBlocks[catIndex];
+				gameBlocks[catIndex] = EMPTY;
+				gameBlocks[target] = catValue;
 
-		// Collision with player
-		if (target === posLeft + posTop * gridSize) {
-			loseGame(catValue);
+				if (target === pIndex) loseGame(catValue);
+			});
+
+			area.querySelectorAll('.tile').forEach(t=>t.remove());
+			drawGamePlan(gameArea, gameBlocks);
 		}
-		});
 
-		area.querySelectorAll('.tile').forEach(t => t.remove());
-		drawGamePlan(gameArea, gameBlocks);
-	}
-
-	setInterval(moveCats, INTERVAL);
-
+		setInterval(moveCats, INTERVAL);
 	})();
 
 	// Check if player is on touch device
