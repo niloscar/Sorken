@@ -124,20 +124,23 @@ window.addEventListener("DOMContentLoaded", function () {
     a.volume = 0.8;
   });
 
-  function loseGame(catValue) {
-    gameOver = true;
+  // katt eller örn?
 
-    body.classList.add("gameover");
-    shakeWrap.classList.add("eaten");
+  function loseGame(reason, soundId = null) {
+	gameOver = true;
 
-    const sound = catSounds[catValue];
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play().catch((err) => console.log("Audio blocked:", err));
-    }
+	body.classList.add('gameover');
+	shakeWrap.classList.add('eaten');
 
-    gameAlert(`GAME OVER 💀 Du blev uppäten av en katt!`);
-  }
+	if (soundId && catSounds[soundId]) {
+		const sound = catSounds[soundId];
+		sound.currentTime = 0;
+		sound.play().catch(err => console.log('Audio blocked:', err));
+	}
+
+	gameAlert(reason);
+}
+
 
   function eagleAlert(message) {
 	const el = document.createElement('div');
@@ -195,7 +198,8 @@ window.addEventListener("DOMContentLoaded", function () {
 
     // 🐱 KATT = FÖRLUST
     if (catBlocks.has(nextBlock)) {
-      loseGame(nextBlock);
+      loseGame("GAME OVER 💀 Du blev uppäten av en katt!", nextBlock);
+
       return;
     }
 
@@ -436,7 +440,7 @@ window.addEventListener("DOMContentLoaded", function () {
         gameBlocks[catIndex] = EMPTY;
         gameBlocks[target] = catValue;
 
-        if (target === pIndex) loseGame(catValue);
+        if (target === pIndex) loseGame("GAME OVER 💀 Du blev uppäten av en katt!", catValue);
       });
 
       area.querySelectorAll(".tile").forEach((t) => t.remove());
@@ -546,7 +550,8 @@ window.addEventListener("DOMContentLoaded", function () {
 
       // Collision
       if (eagleIndex === px + py * gridSize) {
-        loseGame(EAGLE_ID);
+        loseGame("GAME OVER 💀 Du blev tagen av örnen!");
+
       }
 
       area.querySelectorAll(".tile").forEach((t) => t.remove());
