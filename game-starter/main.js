@@ -124,6 +124,54 @@ window.addEventListener('DOMContentLoaded', function () {
 
 		gameAlert(`GAME OVER 💀 Du blev uppäten av en katt!`);
   	}
+
+function bindPortals(blockNr) {
+  const isPortal = blockNr; // Define what block numbers are portals
+  const portals = [];
+  const targetPortals = [];
+  let portalId = 0;
+
+  // Iterate through gameBlocks to find all portals
+  gameBlocks.forEach((block, index) => {
+    if (block === isPortal) {
+      const x = index % gridSize; // Convert index to x position
+      const y = Math.floor(index / gridSize); // Convert index to y position
+
+      portals.push({
+        id: portalId,
+        // blockValue: block,
+        x: x,
+        y: y,
+        index: index,
+      });
+
+      targetPortals.push(portalId);
+
+      portalId++;
+    }
+  });
+
+  portals.forEach(portalObject => {
+    let target = targetPortals[Math.floor(Math.random() * targetPortals.length)];
+
+    while (portalObject.id === target && targetPortals.length > 1) {
+      console.log('clash!');
+      target = targetPortals[Math.floor(Math.random() * targetPortals.length)];
+    }
+
+    portalObject.targetPortal = target;
+    targetPortals.splice(targetPortals.indexOf(target), 1); // Remove only 1 element
+
+    console.log(`portal ${portalObject.id} targets ${portalObject.targetPortal}`);
+  });
+
+  console.log(portals);
+
+  return portals;
+}
+// Store the portals array so move() and portal() can access it
+const boundPortals = bindPortals(90);
+    
     
     /**
      * Move Sorken
@@ -135,13 +183,23 @@ window.addEventListener('DOMContentLoaded', function () {
 			rockford.style.top  = (posTop  * tileSize) + 'px';
 		}
 		
-		function portal(portal1, portal2) { // Make a pair of gameblocks into two-way portals. (n.index of portal 1, n.index portal 2)
-			let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize; // position of enter portal/player
-			let targetIndex = portalIndex === portal1 ? portal2 : portal1; // position of portal player exits
-			posLeft = targetIndex % gridSize; // calculates the new column position of player - Had to leverage AI for this calculation ._.
-			posTop = Math.floor(targetIndex / gridSize); // calculates the new row position of player
-			moveIt();
-		}
+		function portal(BlockNr) {
+  let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
+
+  let enteredPortal = boundPortals.find(portal => portal.index === portalIndex);
+
+  let targetPortalID = enteredPortal.targetPortal;
+
+  let targetPortal = boundPortals.find(portal => portal.id === targetPortalID);
+
+  if (gameBlocks[targetPortal.index] === BlockNr) {
+    posLeft = targetPortal.x;
+    posTop = targetPortal.y;
+    moveIt();
+  }
+
+  gameBlocks[portalIndex] = 10;
+}
 
 		if(which) { rockford.className='baddie ' + which; }
 
@@ -201,7 +259,7 @@ window.addEventListener('DOMContentLoaded', function () {
 					break;
 
 				case 90: // Get into portal
-					portal(88, 409);
+					portal(90);
 					break;
 
 				default:
