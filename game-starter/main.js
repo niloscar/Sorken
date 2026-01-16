@@ -1,498 +1,558 @@
 /**
  * SORKEN
  */
-window.addEventListener('DOMContentLoaded', function () {
-	'use strict';
-	initTouchControls();
-  	const score = {cheeseCount: 0, catEncounters: 0};
-	const body = document.querySelector('body');
-  	let rockford = document.getElementById('baddie1'),
-	shakeWrap = document.getElementById('shake-wrap'),
-    area = document.getElementById('flash'),
+window.addEventListener("DOMContentLoaded", function () {
+  "use strict";
+  initTouchControls();
+  const score = { cheeseCount: 0, catEncounters: 0 };
+  const body = document.querySelector("body");
+  let rockford = document.getElementById("baddie1"),
+    shakeWrap = document.getElementById("shake-wrap"),
+    area = document.getElementById("flash"),
     left = area.offsetLeft, // CSS positioning
-    top  = area.offsetTop,
-    posLeft = 0,    // Steps right/left
-    posTop = 0,     // Steps up/down
-    tileSize = (isTouchDevice()) ? 14 : 32,  // Tile size in height/width
-    gridSize = 24,  // Grid size 24x24
+    top = area.offsetTop,
+    posLeft = 0, // Steps right/left
+    posTop = 0, // Steps up/down
+    tileSize = isTouchDevice() ? 14 : 32, // Tile size in height/width
+    gridSize = 24, // Grid size 24x24
     gameStarted = false,
-
     /**
      * This is the background for the game area.
      */
     gameArea = [
-      10,24,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,24,10
+      10, 24, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 24, 10,
     ],
-
     gameBlocks = [
-      19,10,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
-      19,10,10,10,10,19,90,10,10,10,10,10,19,10,10,10,10,10,10,19,91,10,10,19,
-      19,10,19,19,10,19,19,19,19,19,19,10,19,10,10,10,10,10,10,19,19,19,10,19,
-      19,10,19,22,10,10,10,19,55,10,10,10,19,10,10,10,90,10,10,10,10,19,10,19,
-      19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
-      19,20,10,10,10,10,10,10,10,10,10,10,20,19,10,10,10,10,10,56,10,10,10,19,
-      19,19,19,19,19,19,19,19,19,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,
-      19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
-      19,10,10,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,19,19,19,19,10,19,
-      19,10,10,10,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,19,
-      19,19,19,19,10,19,19,19,19,19,10,19,10,10,10,10,10,10,10,19,10,19,19,19,
-      19,10,10,10,10,10,10,19,10,10,10,19,10,10,22,10,10,10,10,10,10,10,10,19,
-      19,10,19,19,19,19,10,19,10,19,19,19,10,10,58,10,10,10,10,19,19,19,10,19,
-      19,10,90,19,20,10,10,19,10,10,10,19,19,19,19,19,19,19,19,19,10,10,10,19,
-      19,19,19,19,19,19,10,19,19,19,10,10,10,10,10,10,10,10,10,10,10,19,19,19,
-      19,10,10,10,10,10,10,19,10,10,10,19,19,19,19,19,10,19,19,19,19,19,20,19,
-      19,10,19,19,19,19,19,19,10,19,19,19,10,10,92,19,10,10,10,10,10,19,10,19,
-      19,91,10,10,57,10,10,10,10,10,10,10,10,19,19,19,19,19,19,19,10,59,93,19,
-      19,19,19,19,19,19,19,19,19,19,19,19,10,10,10,10,10,10,20,19,10,19,19,19,
-      19,10,10,10,10,10,10,19,10,10,10,19,19,19,19,19,10,19,19,19,10,19,93,19,
-      19,10,10,10,10,10,10,19,10,19,10,10,92,19,20,19,10,10,10,19,10,19,10,19,
-      19,10,22,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,10,19,10,10,10,19,
-      19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,10,19,10,19,
-      19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19
+      19, 10, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19,
+      19, 19, 19, 19, 19, 19, 19, 10, 10, 10, 10, 19, 90, 10, 10, 10, 10, 10,
+      19, 10, 10, 10, 10, 10, 10, 19, 91, 10, 10, 19, 19, 10, 19, 19, 10, 19,
+      19, 19, 19, 19, 19, 10, 19, 10, 10, 10, 10, 10, 10, 19, 19, 19, 10, 19,
+      19, 10, 19, 22, 10, 10, 10, 19, 55, 10, 10, 10, 19, 10, 10, 10, 90, 10,
+      10, 10, 10, 19, 10, 19, 19, 10, 19, 19, 19, 19, 10, 19, 10, 19, 19, 19,
+      19, 19, 10, 19, 19, 19, 19, 19, 10, 19, 10, 19, 19, 20, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 20, 19, 10, 10, 10, 10, 10, 56, 10, 10, 10, 19,
+      19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 10, 19, 19, 19, 19, 19, 10, 19,
+      19, 19, 19, 19, 10, 19, 19, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 10,
+      10, 10, 10, 19, 10, 10, 10, 10, 10, 10, 10, 19, 19, 10, 10, 10, 10, 10,
+      10, 19, 10, 19, 19, 19, 19, 19, 10, 19, 19, 19, 19, 19, 19, 19, 10, 19,
+      19, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 10, 10, 10,
+      10, 19, 10, 10, 10, 19, 19, 19, 19, 19, 10, 19, 19, 19, 19, 19, 10, 19,
+      10, 10, 10, 10, 10, 10, 10, 19, 10, 19, 19, 19, 19, 10, 10, 10, 10, 10,
+      10, 19, 10, 10, 10, 19, 10, 10, 22, 10, 10, 10, 10, 10, 10, 10, 10, 19,
+      19, 10, 19, 19, 19, 19, 10, 19, 10, 19, 19, 19, 10, 10, 58, 10, 10, 10,
+      10, 19, 19, 19, 10, 19, 19, 10, 90, 19, 20, 10, 10, 19, 10, 10, 10, 19,
+      19, 19, 19, 19, 19, 19, 19, 19, 10, 10, 10, 19, 19, 19, 19, 19, 19, 19,
+      10, 19, 19, 19, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 19, 19, 19,
+      19, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 19, 19, 19, 19, 19, 10, 19,
+      19, 19, 19, 19, 20, 19, 19, 10, 19, 19, 19, 19, 19, 19, 10, 19, 19, 19,
+      10, 10, 92, 19, 10, 10, 10, 10, 10, 19, 10, 19, 19, 91, 10, 10, 57, 10,
+      10, 10, 10, 10, 10, 10, 10, 19, 19, 19, 19, 19, 19, 19, 10, 59, 93, 19,
+      19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 10, 10, 10, 10, 10, 10,
+      20, 19, 10, 19, 19, 19, 19, 10, 10, 10, 10, 10, 10, 19, 10, 10, 10, 19,
+      19, 19, 19, 19, 10, 19, 19, 19, 10, 19, 93, 19, 19, 10, 10, 10, 10, 10,
+      10, 19, 10, 19, 10, 10, 92, 19, 20, 19, 10, 10, 10, 19, 10, 19, 10, 19,
+      19, 10, 22, 10, 10, 10, 10, 19, 10, 19, 19, 19, 19, 19, 10, 19, 19, 19,
+      10, 19, 10, 10, 10, 19, 19, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+      10, 10, 10, 10, 10, 10, 10, 19, 10, 19, 10, 19, 19, 19, 19, 19, 19, 19,
+      19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 10, 19,
     ];
-	area.classList.add('lightsout');
+  area.classList.add("lightsout");
 
-    /**
-     * Draw the initial gameplan
-	 */
-	function drawGamePlan(gameArea, gameBlocks) {
-    	let e;
-    	for(let i = 0; i < gameArea.length; i++) {
-       		e = document.createElement('div');
-       		e.className = 'tile t' + gameArea[i] + ' b' + gameBlocks[i];
-       		e.id = 'n' + i;
-       		area.appendChild(e);
-      	}
-    };
-	console.log('Drawing gameplan.');  
-    drawGamePlan(gameArea, gameBlocks);
-    
-	/**
-   	 * Cats
-   	 */
-  	const catBlocks = new Set([55, 56, 57, 58, 59]);
-  	let gameOver = false;
-
-  	// MEOW (läggs UTANFÖR loseGame, så den finns innan den används)
-  	const catSounds = {
-    	55: new Audio('sounds/cat-meow-401729.mp3'),
-		56: new Audio('sounds/cat-meow-297927.mp3'),
-		57: new Audio('sounds/cat-meowing-type-02-293290.mp3'),
-		58: new Audio('sounds/cat-meow-6226.mp3'),
-		59: new Audio('sounds/cat-meowing-type-01-293291.mp3'),
-  	};
-
-  	Object.values(catSounds).forEach(a => {
-    	a.preload = 'auto';
-    	a.volume = 0.8;
-  	});
-
-	function loseGame(catValue) {
-    	gameOver = true;
-
-		body.classList.add('gameover');
-		shakeWrap.classList.add('eaten');
-
-    	const sound = catSounds[catValue];
-    	if (sound) {
-      		sound.currentTime = 0;
-      		sound.play().catch(err => console.log('Audio blocked:', err));
-    	}
-
-		gameAlert(`GAME OVER 💀 Du blev uppäten av en katt!`);
-  	}
-    
-    /**
-     * Move Sorken
-     */
-   	let move = function(moveLeft, moveTop, which) {
-		
-		function moveIt() {
-			rockford.style.left = (posLeft * tileSize) + 'px';
-			rockford.style.top  = (posTop  * tileSize) + 'px';
-		}
-		
-		function portal(portal1, portal2) { // Make a pair of gameblocks into two-way portals. (n.index of portal 1, n.index portal 2)
-			let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize; // position of enter portal/player
-			let targetIndex = portalIndex === portal1 ? portal2 : portal1; // position of portal player exits
-			posLeft = targetIndex % gridSize; // calculates the new column position of player - Had to leverage AI for this calculation ._.
-			posTop = Math.floor(targetIndex / gridSize); // calculates the new row position of player
-			moveIt();
-		}
-
-		if(which) { rockford.className='baddie ' + which; }
-
-		/**
-		 * Cats
-		 */
-
-		if (gameOver) return;
-
-		const nextIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
-		if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
-
-		const nextBlock = gameBlocks[nextIndex];
-
-		// 🐱 KATT = FÖRLUST
-		if (catBlocks.has(nextBlock)) {
-			loseGame(nextBlock);
-			return;
-		}
-
-
-		// First if means the baddie can movie
-		let tilePosition = (posLeft + moveLeft) + (posTop + moveTop) * gridSize;
-
-		if (!(nextBlock - 10)) {
-			posLeft += moveLeft; 
-			posTop  += moveTop;
-			moveIt();
-		} else {
-			// If not possible to move:
-			switch(nextBlock) {
-				case 20:
-				updateScore(score.cheeseCount++);
-				checkEagleSpawn();
-				shakeWrap.classList.add('eating');
-
-				
-					updateScore(score.cheeseCount++);
-					shakeWrap.classList.add('eating');
-					
-					shakeWrap.addEventListener('animationend', () => {
-						shakeWrap.classList.remove('eating');
-
-						area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan, except for baddie.
-						gameBlocks[tilePosition] = 10;
-						gameArea[tilePosition] = 28;
-						drawGamePlan(gameArea, gameBlocks);
-						rockford = document.getElementById('baddie1');
-						moveIt();
-					
-					}, { once: true });
-					break;
-
-				case 22: // Get the Power Rod of Enlightment
-					gameBlocks[tilePosition] = 10;
-					gameArea[tilePosition] = 28;
-					drawGamePlan(gameArea, gameBlocks);
-					rockford = document.getElementById('baddie1');
-					moveIt();
-					area.classList.toggle('lightsout');
-					break;
-
-				case 90: // Get into portal
-					portal(88, 409);
-					break;
-
-				default:
-					console.log('Block detected, cant move.');
-			}
-		}
-		
-    };
-    console.log('Flyttar sork till utgångsposition.');  
-    move(1, 0, 'down');
-    
-    function xyToTile (x, y) {
-      return (x + y) * gridSize;
+  /**
+   * Draw the initial gameplan
+   */
+  function drawGamePlan(gameArea, gameBlocks) {
+    let e;
+    for (let i = 0; i < gameArea.length; i++) {
+      e = document.createElement("div");
+      e.className = "tile t" + gameArea[i] + " b" + gameBlocks[i];
+      e.id = "n" + i;
+      area.appendChild(e);
     }
-    
+  }
+  console.log("Drawing gameplan.");
+  drawGamePlan(gameArea, gameBlocks);
+
+  /**
+   * Cats
+   */
+  const catBlocks = new Set([55, 56, 57, 58, 59]);
+  let gameOver = false;
+
+  // MEOW (läggs UTANFÖR loseGame, så den finns innan den används)
+  const catSounds = {
+    55: new Audio("sounds/cat-meow-401729.mp3"),
+    56: new Audio("sounds/cat-meow-297927.mp3"),
+    57: new Audio("sounds/cat-meowing-type-02-293290.mp3"),
+    58: new Audio("sounds/cat-meow-6226.mp3"),
+    59: new Audio("sounds/cat-meowing-type-01-293291.mp3"),
+  };
+
+  Object.values(catSounds).forEach((a) => {
+    a.preload = "auto";
+    a.volume = 0.8;
+  });
+
+  function loseGame(catValue) {
+    gameOver = true;
+
+    body.classList.add("gameover");
+    shakeWrap.classList.add("eaten");
+
+    const sound = catSounds[catValue];
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch((err) => console.log("Audio blocked:", err));
+    }
+
+    gameAlert(`GAME OVER 💀 Du blev uppäten av en katt!`);
+  }
+
+  function eagleAlert(message) {
+	const el = document.createElement('div');
+	el.id = 'game-alert';
+	el.classList.add('eagle-alert');
+	el.innerText = message;
+
+	const scrollY = window.scrollY || window.pageYOffset;
+	const scrollX = window.scrollX || window.pageXOffset;
+
+	el.style.position = 'absolute';
+	el.style.top = (scrollY + window.innerHeight / 2) + 'px';
+	el.style.left = (scrollX + window.innerWidth / 2) + 'px';
+	el.style.transform = 'translate(-50%, -50%)';
+
+	body.append(el);
+
+	setTimeout(() => el.remove(), 2000);
+}
+
+
+
+  /**
+   * Move Sorken
+   */
+  let move = function (moveLeft, moveTop, which) {
+    function moveIt() {
+      rockford.style.left = posLeft * tileSize + "px";
+      rockford.style.top = posTop * tileSize + "px";
+    }
+
+    function portal(portal1, portal2) {
+      // Make a pair of gameblocks into two-way portals. (n.index of portal 1, n.index portal 2)
+      let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize; // position of enter portal/player
+      let targetIndex = portalIndex === portal1 ? portal2 : portal1; // position of portal player exits
+      posLeft = targetIndex % gridSize; // calculates the new column position of player - Had to leverage AI for this calculation ._.
+      posTop = Math.floor(targetIndex / gridSize); // calculates the new row position of player
+      moveIt();
+    }
+
+    if (which) {
+      rockford.className = "baddie " + which;
+    }
+
     /**
-     * Keep track on keys (and toch controls) pressed and move Sorken accordingly.
-    */
-	// Key codes.
-	const k = {
-		space: 32,
-		left: 37,
-		right: 39,
-		up: 38,
-		down: 40,
-	};
+     * Cats
+     */
 
-	document.onkeydown = (event) => keyDown(event.keyCode || event.which);
-	
-	if (isTouchDevice()) {
-		const touchControls = body.querySelector('#touch-controls');
-		const touchKeys = touchControls?.querySelectorAll('button[id^="touch-"]');
-		for(let key of touchKeys) key.addEventListener('touchstart', () => {
-			const keyCode = Number(k[key.id.trim().split('-')[1]]);
-			keyDown(keyCode);
-		});
-	}
+    if (gameOver) return;
 
-	function keyDown (keyCode) {
+    const nextIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
+    if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
 
-		if (!gameStarted) {
-			timer(true);
-			gameStarted = true;
-		}
+    const nextBlock = gameBlocks[nextIndex];
 
-		switch (keyCode) {
-			case k.left:
-				move(-1, 0, 'left');
-				break;
+    // 🐱 KATT = FÖRLUST
+    if (catBlocks.has(nextBlock)) {
+      loseGame(nextBlock);
+      return;
+    }
 
-			case k.right:
-				move(1, 0, 'right');
-				break;
+    // First if means the baddie can movie
+    let tilePosition = posLeft + moveLeft + (posTop + moveTop) * gridSize;
 
-			case k.up:
-				move(0, -1, 'up');
-				break;
+    if (!(nextBlock - 10)) {
+      posLeft += moveLeft;
+      posTop += moveTop;
+      moveIt();
+    } else {
+      // If not possible to move:
+      switch (nextBlock) {
+        case 20:
+          updateScore(score.cheeseCount++);
+          checkEagleSpawn();
+          shakeWrap.classList.add("eating");
 
-			case k.down:
-				move(0, 1, 'down');
-				break;
+          updateScore(score.cheeseCount++);
+          shakeWrap.classList.add("eating");
 
-			default:
-				move(0, 0, 'down');
-				break;
-		}
-		console.log('Keypress: ' + event + ' key: ' + keyCode + ' new pos: ' + rockford.offsetLeft + ', ' + rockford.offsetTop);
-  	};
+          shakeWrap.addEventListener(
+            "animationend",
+            () => {
+              shakeWrap.classList.remove("eating");
 
-	function updateScore(val) {
-		const scoreBoard = document.getElementById('scoreboard');
-		const scoreCheeses = scoreBoard?.querySelector('#score-cheeses');
-		const scoreCats = scoreBoard?.querySelector('#score-cats');
+              area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan, except for baddie.
+              gameBlocks[tilePosition] = 10;
+              gameArea[tilePosition] = 28;
+              drawGamePlan(gameArea, gameBlocks);
+              rockford = document.getElementById("baddie1");
+              moveIt();
+            },
+            { once: true }
+          );
+          break;
 
-		scoreCheeses.innerText = (score.cheeseCount);
-		scoreCats.innerText = (score.catEncounters);
-	}
+        case 22: // Get the Power Rod of Enlightment
+          gameBlocks[tilePosition] = 10;
+          gameArea[tilePosition] = 28;
+          drawGamePlan(gameArea, gameBlocks);
+          rockford = document.getElementById("baddie1");
+          moveIt();
+          area.classList.toggle("lightsout");
+          break;
 
-	// Set the timelimit argument in mm:ss format.
-	((timeLimit = '1:00') => {
-		const timer = document.querySelector("#timer > span");
-		if (!timer) return;
+        case 90: // Get into portal
+          portal(88, 409);
+          break;
 
-		timer.innerText = timeLimit;
-	})();
+        default:
+          console.log("Block detected, cant move.");
+      }
+    }
+  };
+  console.log("Flyttar sork till utgångsposition.");
+  move(1, 0, "down");
 
-	function timer(action) {
-		const timer = document.querySelector("#timer > span");
-		if (!timer) return;
+  function xyToTile(x, y) {
+    return (x + y) * gridSize;
+  }
 
- 		let [minutes, seconds] = timer.innerText.trim().split(":");
-		const totSeconds = (parseInt(minutes, 10) * 60) + parseInt(seconds, 10);
-		const end = Date.now() + totSeconds * 1000;
+  /**
+   * Keep track on keys (and toch controls) pressed and move Sorken accordingly.
+   */
+  // Key codes.
+  const k = {
+    space: 32,
+    left: 37,
+    right: 39,
+    up: 38,
+    down: 40,
+  };
 
-		const now = new Date();
+  document.onkeydown = (event) => keyDown(event.keyCode || event.which);
 
-		const x = setInterval(() => {
-			const msLeft = Math.max(0, end - Date.now());
+  if (isTouchDevice()) {
+    const touchControls = body.querySelector("#touch-controls");
+    const touchKeys = touchControls?.querySelectorAll('button[id^="touch-"]');
+    for (let key of touchKeys)
+      key.addEventListener("touchstart", () => {
+        const keyCode = Number(k[key.id.trim().split("-")[1]]);
+        keyDown(keyCode);
+      });
+  }
 
-			const secsLeft = Math.ceil(msLeft / 1000);
-			const minutes = Math.floor(secsLeft / 60);
-			const seconds = secsLeft % 60;
+  function keyDown(keyCode) {
+    if (!gameStarted) {
+      timer(true);
+      gameStarted = true;
+    }
 
-			timer.innerHTML = `${minutes}:${String(seconds).padStart(2, "0")}`;
+    switch (keyCode) {
+      case k.left:
+        move(-1, 0, "left");
+        break;
 
-			if (msLeft === 0) {
-				clearInterval(x);
-				timer.classList.add("timesup");
-				gameAlert("TIDEN ÄR UTE!");
-			}
-		}, 250);
-	}
+      case k.right:
+        move(1, 0, "right");
+        break;
 
-	function gameAlert(message) {
-		const el = document.createElement('div');
-		el.id = 'game-alert';
-		el.innerText = message;
-		body.append(el);
+      case k.up:
+        move(0, -1, "up");
+        break;
 
-		document.onkeydown = (event) => {
-			if ((event.keyCode || event.which) === 32) location.reload();
-		}
-	}
+      case k.down:
+        move(0, 1, "down");
+        break;
 
-	// Cats moving around (SMART CATS!)
+      default:
+        move(0, 0, "down");
+        break;
+    }
+    console.log(
+      "Keypress: " +
+        event +
+        " key: " +
+        keyCode +
+        " new pos: " +
+        rockford.offsetLeft +
+        ", " +
+        rockford.offsetTop
+    );
+  }
 
-	(function startMovingCats() {
+  function updateScore(val) {
+    const scoreBoard = document.getElementById("scoreboard");
+    const scoreCheeses = scoreBoard?.querySelector("#score-cheeses");
+    const scoreCats = scoreBoard?.querySelector("#score-cats");
 
-		const CAT_IDS = [55,56,57,58,59];
-		const EMPTY = 10;
-		const INTERVAL = 600;
-		const HUNT_RANGE = 7;
+    scoreCheeses.innerText = score.cheeseCount;
+    scoreCats.innerText = score.catEncounters;
+  }
 
-		const playerIndex = () => posLeft + posTop * gridSize;
+  // Set the timelimit argument in mm:ss format.
+  ((timeLimit = "1:00") => {
+    const timer = document.querySelector("#timer > span");
+    if (!timer) return;
 
-		const dist = (a,b) => {
-			const ax = a % gridSize, ay = Math.floor(a / gridSize);
-			const bx = b % gridSize, by = Math.floor(b / gridSize);
-			return Math.abs(ax - bx) + Math.abs(ay - by);
-		};
+    timer.innerText = timeLimit;
+  })();
 
-		const neighbors = (i) => {
-			const x = i % gridSize, y = Math.floor(i / gridSize);
-			return [
-				[x+1,y],[x-1,y],[x,y+1],[x,y-1]
-			]
-			.filter(([nx,ny]) => nx>=0 && ny>=0 && nx<gridSize && ny<gridSize)
-			.map(([nx,ny]) => nx + ny * gridSize)
-			.filter(n => gameBlocks[n] === EMPTY || n === playerIndex());
-		};
+  function timer(action) {
+    const timer = document.querySelector("#timer > span");
+    if (!timer) return;
 
-		function moveCats() {
-			if (gameOver) return;
+    let [minutes, seconds] = timer.innerText.trim().split(":");
+    const totSeconds = parseInt(minutes, 10) * 60 + parseInt(seconds, 10);
+    const end = Date.now() + totSeconds * 1000;
 
-			const cats = gameBlocks
-				.map((v,i)=>CAT_IDS.includes(v)?i:-1)
-				.filter(i=>i!==-1);
+    const now = new Date();
 
-			cats.forEach(catIndex => {
-				const pIndex = playerIndex();
-				const opts = neighbors(catIndex);
-				if (!opts.length) return;
+    const x = setInterval(() => {
+      const msLeft = Math.max(0, end - Date.now());
 
-				let target;
+      const secsLeft = Math.ceil(msLeft / 1000);
+      const minutes = Math.floor(secsLeft / 60);
+      const seconds = secsLeft % 60;
 
-				if (dist(catIndex, pIndex) <= HUNT_RANGE) {
-					target = opts.reduce((best,cur)=>
-						dist(cur,pIndex) < dist(best,pIndex) ? cur : best
-					);
-				} else {
-					target = opts[Math.floor(Math.random()*opts.length)];
-				}
+      timer.innerHTML = `${minutes}:${String(seconds).padStart(2, "0")}`;
 
-				const catValue = gameBlocks[catIndex];
-				gameBlocks[catIndex] = EMPTY;
-				gameBlocks[target] = catValue;
+      if (msLeft === 0) {
+        clearInterval(x);
+        timer.classList.add("timesup");
+        gameAlert("TIDEN ÄR UTE!");
+      }
+    }, 250);
+  }
 
-				if (target === pIndex) loseGame(catValue);
-			});
+  function gameAlert(message) {
+    const el = document.createElement("div");
+    el.id = "game-alert";
+    el.innerText = message;
+    body.append(el);
 
-			area.querySelectorAll('.tile').forEach(t=>t.remove());
-			drawGamePlan(gameArea, gameBlocks);
-		}
+    document.onkeydown = (event) => {
+      if ((event.keyCode || event.which) === 32) location.reload();
+    };
+  }
 
-		setInterval(moveCats, INTERVAL);
-	})();
+  // Cats moving around (SMART CATS!)
 
-	// Check if player is on touch device
-	function isTouchDevice () { return navigator.maxTouchPoints > 0 };
+  (function startMovingCats() {
+    const CAT_IDS = [55, 56, 57, 58, 59];
+    const EMPTY = 10;
+    const INTERVAL = 600;
+    const HUNT_RANGE = 7;
 
-	// Initialize touch controls
-	function initTouchControls() {
-		if (isTouchDevice()) {
-			const touchControls = [
-				{id: 'touch-controls', type: 'div', parent: 'body'},
-				{id: 'touch-left', type: 'button', parent: '#touch-controls'},
-				{id: 'touch-right', type: 'button', parent: '#touch-controls'},
-				{id: 'touch-up', type: 'button', parent: '#touch-controls'},
-				{id: 'touch-down', type: 'button', parent: '#touch-controls'}
-			];
+    const playerIndex = () => posLeft + posTop * gridSize;
 
-			for(let obj of touchControls) {
-				const parent = document.querySelector(obj.parent),
-					el = document.createElement(obj.type);
-					el.addEventListener('pointerdown', () => el.classList.add('active'));
-					['pointerup','pointercancel','pointerleave'].forEach((ev) => { el.addEventListener(ev, () => el.classList.remove('active')) });
-					
-				el.id = obj.id;
-				parent.append(el);
-			}
-			
-			let lastTouchEnd = 0;
+    const dist = (a, b) => {
+      const ax = a % gridSize,
+        ay = Math.floor(a / gridSize);
+      const bx = b % gridSize,
+        by = Math.floor(b / gridSize);
+      return Math.abs(ax - bx) + Math.abs(ay - by);
+    };
 
-			document.addEventListener('touchend', function (e) {
-				const now = Date.now();
-				if (now - lastTouchEnd <= 300) {
-					e.preventDefault();
-				}
-				lastTouchEnd = now;
-			}, { passive: false });
-		}
-	}
+    const neighbors = (i) => {
+      const x = i % gridSize,
+        y = Math.floor(i / gridSize);
+      return [
+        [x + 1, y],
+        [x - 1, y],
+        [x, y + 1],
+        [x, y - 1],
+      ]
+        .filter(
+          ([nx, ny]) => nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize
+        )
+        .map(([nx, ny]) => nx + ny * gridSize)
+        .filter((n) => gameBlocks[n] === EMPTY || n === playerIndex());
+    };
 
-	// Enemies Above DLC
+    function moveCats() {
+      if (gameOver) return;
 
-	const EAGLE_ID = 70;
-	let eagleIndex = null;
-	let eagleInterval = null;
+      const cats = gameBlocks
+        .map((v, i) => (CAT_IDS.includes(v) ? i : -1))
+        .filter((i) => i !== -1);
 
-	function countRemainingCheese() {
-	return gameBlocks.filter(b => b === 20).length;
-}
+      cats.forEach((catIndex) => {
+        const pIndex = playerIndex();
+        const opts = neighbors(catIndex);
+        if (!opts.length) return;
 
-	function checkEagleSpawn() {
-	if (eagleIndex !== null) return;
-	if (countRemainingCheese() > 2) return;
+        let target;
 
-	// Random Eagle Spawn
+        if (dist(catIndex, pIndex) <= HUNT_RANGE) {
+          target = opts.reduce((best, cur) =>
+            dist(cur, pIndex) < dist(best, pIndex) ? cur : best
+          );
+        } else {
+          target = opts[Math.floor(Math.random() * opts.length)];
+        }
 
-	const emptyTiles = gameBlocks
-		.map((v, i) => v === 10 ? i : -1)
-		.filter(i => i !== -1);
+        const catValue = gameBlocks[catIndex];
+        gameBlocks[catIndex] = EMPTY;
+        gameBlocks[target] = catValue;
 
-	eagleIndex = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
-	gameBlocks[eagleIndex] = EAGLE_ID;
+        if (target === pIndex) loseGame(catValue);
+      });
 
-	startEagle();
-}
+      area.querySelectorAll(".tile").forEach((t) => t.remove());
+      drawGamePlan(gameArea, gameBlocks);
+    }
 
-	function startEagle() {
-	eagleInterval = setInterval(() => {
-		if (gameOver) return;
+    setInterval(moveCats, INTERVAL);
+  })();
 
-		const px = posLeft;
-		const py = posTop;
+  // Check if player is on touch device
+  function isTouchDevice() {
+    return navigator.maxTouchPoints > 0;
+  }
 
-		const ex = eagleIndex % gridSize;
-		const ey = Math.floor(eagleIndex / gridSize);
+  // Initialize touch controls
+  function initTouchControls() {
+    if (isTouchDevice()) {
+      const touchControls = [
+        { id: "touch-controls", type: "div", parent: "body" },
+        { id: "touch-left", type: "button", parent: "#touch-controls" },
+        { id: "touch-right", type: "button", parent: "#touch-controls" },
+        { id: "touch-up", type: "button", parent: "#touch-controls" },
+        { id: "touch-down", type: "button", parent: "#touch-controls" },
+      ];
 
-		const dx = Math.sign(px - ex);
-		const dy = Math.sign(py - ey);
+      for (let obj of touchControls) {
+        const parent = document.querySelector(obj.parent),
+          el = document.createElement(obj.type);
+        el.addEventListener("pointerdown", () => el.classList.add("active"));
+        ["pointerup", "pointercancel", "pointerleave"].forEach((ev) => {
+          el.addEventListener(ev, () => el.classList.remove("active"));
+        });
 
-		let nx = ex + dx;
-		let ny = ey + dy;
+        el.id = obj.id;
+        parent.append(el);
+      }
 
-		// Clamp inside grid (but ignores walls)
-		nx = Math.max(0, Math.min(gridSize - 1, nx));
-		ny = Math.max(0, Math.min(gridSize - 1, ny));
+      let lastTouchEnd = 0;
 
-		const nextIndex = nx + ny * gridSize;
+      document.addEventListener(
+        "touchend",
+        function (e) {
+          const now = Date.now();
+          if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+          }
+          lastTouchEnd = now;
+        },
+        { passive: false }
+      );
+    }
+  }
 
-		gameBlocks[eagleIndex] = 10;
-		eagleIndex = nextIndex;
-		gameBlocks[eagleIndex] = EAGLE_ID;
+  // Enemies Above DLC
 
-		// Collision
-		if (eagleIndex === px + py * gridSize) {
-			loseGame(EAGLE_ID);
-		}
+  const EAGLE_ID = 70;
+  let eagleIndex = null;
+  let eagleInterval = null;
 
-		area.querySelectorAll('.tile').forEach(t => t.remove());
-		drawGamePlan(gameArea, gameBlocks);
+  function countRemainingCheese() {
+    return gameBlocks.filter((b) => b === 20).length;
+  }
 
-	}, 400);
-}
+  function checkEagleSpawn() {
+    if (eagleIndex !== null) return;
+    if (countRemainingCheese() > 2) return;
 
+    // Random Eagle Spawn
 
+    const emptyTiles = gameBlocks
+      .map((v, i) => (v === 10 ? i : -1))
+      .filter((i) => i !== -1);
 
-  	console.log('Everything is ready.');  
+    eagleIndex = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+    gameBlocks[eagleIndex] = EAGLE_ID;
+
+    eagleAlert("A WILD EAGLE APPEARS!");
+
+    startEagle();
+  }
+
+  function startEagle() {
+    eagleInterval = setInterval(() => {
+      if (gameOver) return;
+
+      const px = posLeft;
+      const py = posTop;
+
+      const ex = eagleIndex % gridSize;
+      const ey = Math.floor(eagleIndex / gridSize);
+
+      const dx = Math.sign(px - ex);
+      const dy = Math.sign(py - ey);
+
+      let nx = ex + dx;
+      let ny = ey + dy;
+
+      // Clamp inside grid (but ignores walls)
+      nx = Math.max(0, Math.min(gridSize - 1, nx));
+      ny = Math.max(0, Math.min(gridSize - 1, ny));
+
+      const nextIndex = nx + ny * gridSize;
+
+      gameBlocks[eagleIndex] = 10;
+      eagleIndex = nextIndex;
+      gameBlocks[eagleIndex] = EAGLE_ID;
+
+      // Collision
+      if (eagleIndex === px + py * gridSize) {
+        loseGame(EAGLE_ID);
+      }
+
+      area.querySelectorAll(".tile").forEach((t) => t.remove());
+      drawGamePlan(gameArea, gameBlocks);
+    }, 400);
+  }
+
+  console.log("Everything is ready.");
 });
