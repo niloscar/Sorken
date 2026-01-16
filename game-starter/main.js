@@ -307,7 +307,6 @@ const boundPortals = bindPortals(90);
       lastItemIndex = nextIndex;
       switch (nextBlock) {
         case 20: // Eat cheese
-          console.log('lastIndex', lastIndex,'nextIndex', nextIndex);
           
           if (score.cheeseCount % 3 === 0) addLives(1);
           checkEagleSpawn();
