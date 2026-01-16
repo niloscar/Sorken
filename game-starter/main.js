@@ -3,9 +3,22 @@
  */
 window.addEventListener("DOMContentLoaded", function () {
   "use strict";
-  initTouchControls();
+
   const score = { cheeseCount: 0, catEncounters: 0 };
   const body = document.querySelector("body");
+  
+  // Enemy data
+  const enemy = [
+		{id: 55, type: 'cat', sound: new Audio('sounds/cat-meow-401729.mp3'), hp: 1},
+		{id: 56, type: 'cat', sound: new Audio('sounds/cat-meow-297927.mp3'), hp: 1},
+		{id: 57, type: 'cat', sound: new Audio('sounds/cat-meowing-type-02-293290.mp3'), hp: 1},
+		{id: 58, type: 'cat', sound: new Audio('sounds/cat-meow-6226.mp3'), hp: 1},
+		{id: 59, type: 'cat', sound: new Audio('sounds/cat-meowing-type-01-293291.mp3'), hp: 1},
+		{id: 70, type: 'eagle', sound: new Audio('sounds/eagle.mp3'), hp: 2},
+		{id: null, type: 'badCheese', sound: null, hp: 1},
+	];
+
+
   let rockford = document.getElementById("baddie1"),
     shakeWrap = document.getElementById("shake-wrap"),
     area = document.getElementById("flash"),
@@ -16,6 +29,8 @@ window.addEventListener("DOMContentLoaded", function () {
     tileSize = isTouchDevice() ? 14 : 32, // Tile size in height/width
     gridSize = 24, // Grid size 24x24
     gameStarted = false,
+	  livesCount = Number(),
+
     /**
      * This is the background for the game area.
      */
@@ -87,6 +102,9 @@ window.addEventListener("DOMContentLoaded", function () {
       10, 10, 10, 10, 10, 10, 10, 19, 10, 19, 10, 19, 19, 19, 19, 19, 19, 19,
       19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 10, 19,
     ];
+  initTouchControls();
+  initLives();
+
   area.classList.add("lightsout");
 
   /**
@@ -208,8 +226,9 @@ function loseGame(reason, soundId = null) {
 
     // 🐱 KATT = FÖRLUST
     if (catBlocks.has(nextBlock)) {
-      loseGame("GAME OVER 💀 Du blev uppäten av en katt!", nextBlock);
 
+      //livesCount > 1 ? damage(nextBlock) : loseGame("GAME OVER 💀 Du blev uppäten av en katt!", nextBlock);
+	  damage(nextBlock);
       return;
     }
 
@@ -223,9 +242,11 @@ function loseGame(reason, soundId = null) {
     } else {
       // If not possible to move:
       switch (nextBlock) {
-        case 20:
+        case 20: // Eat cheese
           updateScore(score.cheeseCount++);
+          if (score.cheeseCount % 3 === 0) addLives(1);
           checkEagleSpawn();
+
           shakeWrap.classList.add("eating");
 
           updateScore(score.cheeseCount++);
@@ -450,7 +471,9 @@ function loseGame(reason, soundId = null) {
         gameBlocks[catIndex] = EMPTY;
         gameBlocks[target] = catValue;
 
-        if (target === pIndex) loseGame("GAME OVER 💀 Du blev uppäten av en katt!", catValue);
+        if (target === pIndex) 
+			damage(catValue);
+			//livesCount > 1 ? damage(enemy) : loseGame("GAME OVER 💀 Du blev uppäten av en katt!", catValue);
       });
 
       area.querySelectorAll(".tile").forEach((t) => t.remove());
@@ -560,15 +583,91 @@ function loseGame(reason, soundId = null) {
 
       // Collision
       if (eagleIndex === px + py * gridSize) {
-        loseGame("GAME OVER 💀 Du blev tagen av örnen!", "eagle");
-
-
+		    damage('eagle');
+		    //livesCount > 1 ? hurt("eagle") : loseGame("GAME OVER 💀 Du blev tagen av örnen!", "eagle");
       }
 
       area.querySelectorAll(".tile").forEach((t) => t.remove());
       drawGamePlan(gameArea, gameBlocks);
     }, 400);
   }
+  
+  // Initialize life-bar
+	function initLives(numLives=3) {
+		const lifeBar = document.createElement('ul');
+		lifeBar.id = 'life-bar';
+		area.before(lifeBar);
+		addLives(numLives);
+	}
+
+  // Add lives (hp)
+	function addLives(numLives=1) {
+		const lifeBar = document.querySelector('#life-bar');
+		if (!lifeBar) return;
+
+		let el,
+		intervalId,
+		i = 0;
+		intervalId ??= setInterval(() => {
+			el = document.createElement('li');
+			el.classList.add = 'life';
+			lifeBar.append(el);
+			livesCount++;
+			i++;
+			if (i === numLives) clearInterval(intervalId);
+		}, 500);
+	}
+
+  // Remove lives (hp)
+  function removeLives(numLives=1) {
+  const lifeBar = document.querySelector('#life-bar');
+  if (!lifeBar) return;
+
+  let el = lifeBar.querySelectorAll('li'),
+  intervalId,
+  i = 0;
+
+  if (!el.length) return;
+
+  intervalId ??= setInterval(() => {
+    el[i].remove();
+    livesCount--;
+    i++;
+    if (i === numLives) clearInterval(intervalId);
+  }, 500);
+  }
+
+  // Inflict damage
+	function damage(enemyType) {
+    if (!enemyType || !enemy) return;
+
+    let enemyData;
+    for (let obj of enemy) {
+      if (obj.id === enemyType || obj.type == enemyType) { // Hämta första objektet som innehåller antingen id eller typ.
+        enemyData = obj;
+        break;
+      }
+    }
+
+    console.log(`Damage by ${enemyData.type}: ${enemyData.hp}.`);
+
+    if (livesCount > 1) { // Om mer än 1hp finns kvar
+      shakeWrap.classList.remove('nibbed'); // Ta bort nibbed-classen för säkerhets skull.
+      void shakeWrap.offsetWidth; // Återställ för att kunna köra animation direkt igen.
+      shakeWrap.classList.add('nibbed'); // Lägg till nibbeed-classen för att köra animation.
+
+      enemyData.sound.currentTime = 0;
+      enemyData.sound.play().catch(err => console.log('Audio blocked:', err)); // Spela fiendeljud.
+      removeLives(enemyData.hp); // Ta bort hp.
+    } else {
+      console.log(`Killed by ${enemyData.type}.`);
+      loseGame(enemyData.type); // Om ingen hälsa kvar, förlora.
+    }
+	}
+
+//   function addTime(seconds) {
+
+//   }
 
   console.log("Everything is ready.");
 });

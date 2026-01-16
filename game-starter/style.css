@@ -322,6 +322,10 @@ body {
     animation: digging 1000ms linear;
   }
 
+  &.nibbed { 
+    animation: nibbed 180ms linear; 
+  }
+
   &.eaten { 
     animation: eaten 350ms linear; 
   }
@@ -717,6 +721,15 @@ body {
   100% { transform: translate(0px, 0px) rotate(0deg)     scale(1.000) skew(0deg, 0deg); }
 }
 
+@keyframes nibbed {
+  0%   { transform: translate(0px,  0px) rotate(0deg)    scale(1.000); }
+  18%  { transform: translate(-2px, 1px) rotate(-1.2deg) scale(1.010); }
+  36%  { transform: translate( 3px,-2px) rotate( 1.6deg) scale(1.020); }
+  54%  { transform: translate(-3px, 2px) rotate(-1.8deg) scale(1.012); }
+  72%  { transform: translate( 2px,-1px) rotate( 1.0deg) scale(1.005); }
+  100% { transform: translate(0px,  0px) rotate(0deg)    scale(1.000); }
+}
+
 @keyframes eaten {
   0%   { transform: translate(0px, 0px) rotate(0deg)   scale(1.000); }
   12%  { transform: translate(-2px,  1px) rotate(-1.0deg) scale(1.010); }
@@ -780,4 +793,20 @@ body {
 	box-shadow: 0 0 40px rgba(0,0,0,0.6);
 }
 
+#life-bar {
+  position: absolute;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  gap: calc(var(--tileSize) * .5);
+  top: 0;
+  right: 0;
+  padding: 0;
+  list-style: none;
 
+  & li {
+    height: var(--tileSize);
+    width: var(--tileSize);
+    background: url(img/sprite_mickey_mos.png) calc(var(--tileSize) * -2) / auto var(--tileSize) no-repeat;
+  }
+}
