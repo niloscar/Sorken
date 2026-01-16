@@ -173,7 +173,11 @@ window.addEventListener('DOMContentLoaded', function () {
 		} else {
 			// If not possible to move:
 			switch(nextBlock) {
-				case 20: // Eat cheese
+				case 20:
+				updateScore(score.cheeseCount++);
+				checkEagleSpawn();
+				shakeWrap.classList.add('eating');
+
 				
 					updateScore(score.cheeseCount++);
 					shakeWrap.classList.add('eating');
@@ -424,6 +428,71 @@ window.addEventListener('DOMContentLoaded', function () {
 			}, { passive: false });
 		}
 	}
+
+	// Enemies Above DLC
+
+	const EAGLE_ID = 70;
+	let eagleIndex = null;
+	let eagleInterval = null;
+
+	function countRemainingCheese() {
+	return gameBlocks.filter(b => b === 20).length;
+}
+
+	function checkEagleSpawn() {
+	if (eagleIndex !== null) return;
+	if (countRemainingCheese() > 2) return;
+
+	// Random Eagle Spawn
+
+	const emptyTiles = gameBlocks
+		.map((v, i) => v === 10 ? i : -1)
+		.filter(i => i !== -1);
+
+	eagleIndex = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
+	gameBlocks[eagleIndex] = EAGLE_ID;
+
+	startEagle();
+}
+
+	function startEagle() {
+	eagleInterval = setInterval(() => {
+		if (gameOver) return;
+
+		const px = posLeft;
+		const py = posTop;
+
+		const ex = eagleIndex % gridSize;
+		const ey = Math.floor(eagleIndex / gridSize);
+
+		const dx = Math.sign(px - ex);
+		const dy = Math.sign(py - ey);
+
+		let nx = ex + dx;
+		let ny = ey + dy;
+
+		// Clamp inside grid (but ignores walls)
+		nx = Math.max(0, Math.min(gridSize - 1, nx));
+		ny = Math.max(0, Math.min(gridSize - 1, ny));
+
+		const nextIndex = nx + ny * gridSize;
+
+		gameBlocks[eagleIndex] = 10;
+		eagleIndex = nextIndex;
+		gameBlocks[eagleIndex] = EAGLE_ID;
+
+		// Collision
+		if (eagleIndex === px + py * gridSize) {
+			loseGame(EAGLE_ID);
+		}
+
+		area.querySelectorAll('.tile').forEach(t => t.remove());
+		drawGamePlan(gameArea, gameBlocks);
+
+	}, 400);
+}
+
+
 
   	console.log('Everything is ready.');  
 });
