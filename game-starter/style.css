@@ -753,3 +753,31 @@ body {
   92%  { transform: translate( 1px,  0px) rotate( 0.3deg) scale(1.002); }
   100% { transform: translate(0px, 0px) rotate(0deg)   scale(1); }
 }
+
+.tile.b70 {
+	background-image: url("/boulder-dash-tiles/monster/animals/caustic_shrike.png");
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	animation: eagle-fly 0.4s steps(1) infinite;
+}
+
+@keyframes eagle-fly {
+	0% { transform: translateY(0); }
+	50% { transform: translateY(-2px); }
+	100% { transform: translateY(0); }
+}
+
+#eagleAlert {
+	z-index: 9999;
+	padding: 24px 32px;
+	background: rgba(0, 0, 0, 0.9);
+	color: #fff;
+	font-size: 1.5rem;
+	font-weight: bold;
+	text-align: center;
+	border-radius: 12px;
+	box-shadow: 0 0 40px rgba(0,0,0,0.6);
+}
+
+
