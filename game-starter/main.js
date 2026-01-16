@@ -26,7 +26,7 @@ window.addEventListener("DOMContentLoaded", function () {
     top = area.offsetTop,
     posLeft = 0, // Steps right/left
     posTop = 0, // Steps up/down
-    tileSize = isTouchDevice() ? 14 : 32, // Tile size in height/width
+    tileSize = smallDevice() ? 14 : 32, // Tile size in height/width
     gridSize = 24, // Grid size 24x24
     gameStarted = false,
 	  livesCount = Number(),
@@ -544,6 +544,11 @@ const boundPortals = bindPortals(90);
   // Check if player is on touch device
   function isTouchDevice() {
     return navigator.maxTouchPoints > 0;
+  }
+
+  // Check viewport width
+  function smallDevice() {
+    return window.innerWidth <= 960;
   }
 
   // Initialize touch controls
