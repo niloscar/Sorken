@@ -17,12 +17,15 @@ window.addEventListener("DOMContentLoaded", function () {
 		{id: 70, type: 'eagle', sound: { file: new Audio('sounds/eagle.mp3'), volume: 0.8 }, hp: 2},
 		{id: null, type: 'badCheese', sound: { file: null, volume: null }, hp: 1},
 	];
+  for (let enemy of enemies) enemy.sound.file ? enemy.sound.file.preload = 'auto' : null; // Preload sounds
 
   // Event data
   const gameEvents = [
 		{id: null, type: 'eagleSpawn', sound: { file: new Audio('sounds/eagle.mp3'), volume: 0.9 }, hp: null},
-		{id: 90, type: 'digging', sound: { file: null, volume: null }, hp: null}
+		{id: 90, type: 'digging', sound: { file: null, volume: null }, hp: null},
+    {id: null, type: 'timesup', sound: { file: new Audio('sounds/clock-ticking-365218.mp3'), volume: 0.8 }, hp: null}
 	];
+  for (let gameEvent of gameEvents) gameEvent.sound.file ? gameEvent.sound.file.preload = 'auto' : null; // Preload sounds
 
   let rockford = document.getElementById("baddie1"),
     shakeWrap = document.getElementById("shake-wrap"),
@@ -134,18 +137,13 @@ window.addEventListener("DOMContentLoaded", function () {
   const catBlocks = new Set([55, 56, 57, 58, 59]);
   let gameOver = false;
 
-  for(let enemy of enemies) {
-    enemy.sound.preload = 'auto';
-    enemy.sound.volume = 0.8;
-  }
-
-
   // Game over, returnera meddelande och ev ljud.
   function loseGame(reason, soundId = null) {
     gameOver = true;
     
     const enemy = enemies.find(obj => obj.type === reason) ?? null;
-    if (!enemy && !reason.length) return;
+    const gameEvent = gameEvents.find(obj => obj.type === reason) ?? null;
+    if (!enemy && !gameEvent && !reason.length) return;
     
     let returnString;
 
@@ -161,6 +159,7 @@ window.addEventListener("DOMContentLoaded", function () {
         break;
       
       case 'timesup':
+        playSound(gameEvent.sound);
         returnString = `GAME OVER ⏰\nTiden gick ut!`;
         break;
         
@@ -745,6 +744,7 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
 //   }
 
   function playSound(sound) {
+      sound.file.volume = sound.volume;
       sound.file.currentTime = 0;
       sound.file.play().catch(err => console.log('Audio blocked:', err));
   }
