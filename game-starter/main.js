@@ -252,22 +252,22 @@ const boundPortals = bindPortals(90);
 		}
 		
 		function portal(BlockNr) {
-  let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
+      let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
 
-  let enteredPortal = boundPortals.find(portal => portal.index === portalIndex);
+      let enteredPortal = boundPortals.find(portal => portal.index === portalIndex);
 
-  let targetPortalID = enteredPortal.targetPortal;
+      let targetPortalID = enteredPortal.targetPortal;
 
-  let targetPortal = boundPortals.find(portal => portal.id === targetPortalID);
+      let targetPortal = boundPortals.find(portal => portal.id === targetPortalID);
 
-  if (gameBlocks[targetPortal.index] === BlockNr) {
-    posLeft = targetPortal.x;
-    posTop = targetPortal.y;
-    moveIt();
-  }
+      if (gameBlocks[targetPortal.index] === BlockNr) {
+        posLeft = targetPortal.x;
+        posTop = targetPortal.y;
+        moveIt();
+      }
 
-  gameBlocks[portalIndex] = 10;
-}
+      gameBlocks[portalIndex] = 10;
+    }
 
     if (which) {
       rockford.className = "baddie " + which;
@@ -287,14 +287,14 @@ const boundPortals = bindPortals(90);
     // 🐱 KATT = FÖRLUST
     if (catBlocks.has(nextBlock)) {
 
-      //livesCount > 1 ? damage(nextBlock) : loseGame("GAME OVER 💀 Du blev uppäten av en katt!", nextBlock);
+    //livesCount > 1 ? damage(nextBlock) : loseGame("GAME OVER 💀 Du blev uppäten av en katt!", nextBlock);
 	  damage(nextBlock);
       return;
     }
 
-    // First if means the baddie can movie
     let tilePosition = posLeft + moveLeft + (posTop + moveTop) * gridSize;
 
+    // First if means the baddie can movie
     if (!(nextBlock - 10)) {
       posLeft += moveLeft;
       posTop += moveTop;
@@ -303,6 +303,7 @@ const boundPortals = bindPortals(90);
       // If not possible to move:
       switch (nextBlock) {
         case 20: // Eat cheese
+          console.log('x',posLeft,'y',posTop,'nextBlock',nextBlock);
           updateScore(score.cheeseCount++);
           if (score.cheeseCount % 3 === 0) addLives(1);
           checkEagleSpawn();
