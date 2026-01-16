@@ -4,20 +4,25 @@
 window.addEventListener("DOMContentLoaded", function () {
   "use strict";
 
-  const score = { cheeseCount: 0, catEncounters: 0 };
+  const score = { cheeseCount: 0, catEncounters: 0, eagleEncounters: 0 };
   const body = document.querySelector("body");
   
   // Enemy data
-  const enemy = [
-		{id: 55, type: 'cat', sound: new Audio('sounds/cat-meow-401729.mp3'), hp: 1},
-		{id: 56, type: 'cat', sound: new Audio('sounds/cat-meow-297927.mp3'), hp: 1},
-		{id: 57, type: 'cat', sound: new Audio('sounds/cat-meowing-type-02-293290.mp3'), hp: 1},
-		{id: 58, type: 'cat', sound: new Audio('sounds/cat-meow-6226.mp3'), hp: 1},
-		{id: 59, type: 'cat', sound: new Audio('sounds/cat-meowing-type-01-293291.mp3'), hp: 1},
-		{id: 70, type: 'eagle', sound: new Audio('sounds/eagle.mp3'), hp: 2},
-		{id: null, type: 'badCheese', sound: null, hp: 1},
+  const enemies = [
+		{id: 55, type: 'cat', sound: { file: new Audio('sounds/cat-meow-401729.mp3'), volume: 0.8 }, hp: 1},
+		{id: 56, type: 'cat', sound: { file: new Audio('sounds/cat-meow-297927.mp3'), volume: 0.8 }, hp: 1},
+		{id: 57, type: 'cat', sound: { file: new Audio('sounds/cat-meowing-type-02-293290.mp3'), volume: 0.8 }, hp: 1},
+		{id: 58, type: 'cat', sound: { file: new Audio('sounds/cat-meow-6226.mp3'), volume: 0.8 }, hp: 1},
+		{id: 59, type: 'cat', sound: { file: new Audio('sounds/cat-meowing-type-01-293291.mp3'), volume: 0.9 }, hp: 1},
+		{id: 70, type: 'eagle', sound: { file: new Audio('sounds/eagle.mp3'), volume: 0.8 }, hp: 2},
+		{id: null, type: 'badCheese', sound: { file: null, volume: null }, hp: 1},
 	];
 
+  // Event data
+  const gameEvents = [
+		{id: null, type: 'eagleSpawn', sound: { file: new Audio('sounds/eagle.mp3'), volume: 0.9 }, hp: null},
+		{id: 90, type: 'digging', sound: { file: null, volume: null }, hp: null}
+	];
 
   let rockford = document.getElementById("baddie1"),
     shakeWrap = document.getElementById("shake-wrap"),
@@ -129,48 +134,42 @@ window.addEventListener("DOMContentLoaded", function () {
   const catBlocks = new Set([55, 56, 57, 58, 59]);
   let gameOver = false;
 
-  // MEOW (läggs UTANFÖR loseGame, så den finns innan den används)
-  const catSounds = {
-    55: new Audio("sounds/cat-meow-401729.mp3"),
-    56: new Audio("sounds/cat-meow-297927.mp3"),
-    57: new Audio("sounds/cat-meowing-type-02-293290.mp3"),
-    58: new Audio("sounds/cat-meow-6226.mp3"),
-    59: new Audio("sounds/cat-meowing-type-01-293291.mp3"),
-  };
-
-  Object.values(catSounds).forEach((a) => {
-    a.preload = "auto";
-    a.volume = 0.8;
-  });
-
-  const eagleSound = new Audio("/game-starter/sounds/eagle.mp3");
-    eagleSound.preload = "auto";
-    eagleSound.volume = 0.9;
-
-  const eagleSpawnSound = new Audio("sounds/eagle.mp3");
-    eagleSpawnSound.preload = "auto";
-    eagleSpawnSound.volume = 0.9;
+  for(let enemy of enemies) {
+    enemy.sound.preload = 'auto';
+    enemy.sound.volume = 0.8;
+  }
 
 
-  // katt eller örn?
-function loseGame(reason, soundId = null) {
-	gameOver = true;
+  // Game over, returnera meddelande och ev ljud.
+  function loseGame(reason, soundId = null) {
+    gameOver = true;
+    
+    const enemy = enemies.find(obj => obj.type === reason) ?? null;
+    if (!enemy && !reason.length) return;
+    
+    let returnString;
 
-	body.classList.add('gameover');
-	shakeWrap.classList.add('eaten');
+    switch(reason) {
+      case 'eagle':
+        playSound(enemy.sound);
+        returnString = `GAME OVER 💀\nDu blev tagen av örnen!`;
+        break;
+            
+      case 'cat':
+        playSound(enemy.sound);
+        returnString = `GAME OVER 💀\nDu blev uppäten av en katt!`;
+        break;
+      
+      case 'timesup':
+        returnString = `GAME OVER ⏰\nTiden gick ut!`;
+        break;
+        
+    }
 
-	if (soundId === "eagle") {
-		eagleSound.currentTime = 0;
-		eagleSound.play().catch(err => console.log('Audio blocked:', err));
-	}
-	else if (soundId && catSounds[soundId]) {
-		const sound = catSounds[soundId];
-		sound.currentTime = 0;
-		sound.play().catch(err => console.log('Audio blocked:', err));
-	}
-
-	gameAlert(reason);
-}
+    body.classList.add('gameover');
+    shakeWrap.classList.add('eaten');
+    gameAlert(returnString ?? reason);
+  }
 
 
 
@@ -223,17 +222,17 @@ function bindPortals(blockNr) {
     let target = targetPortals[Math.floor(Math.random() * targetPortals.length)];
 
     while (portalObject.id === target && targetPortals.length > 1) {
-      console.log('clash!');
+      // console.log('clash!');
       target = targetPortals[Math.floor(Math.random() * targetPortals.length)];
     }
 
     portalObject.targetPortal = target;
     targetPortals.splice(targetPortals.indexOf(target), 1); // Remove only 1 element
 
-    console.log(`portal ${portalObject.id} targets ${portalObject.targetPortal}`);
+    // console.log(`portal ${portalObject.id} targets ${portalObject.targetPortal}`);
   });
 
-  console.log(portals);
+  // console.log(portals);
 
   return portals;
 }
@@ -289,8 +288,7 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
     // 🐱 KATT = FÖRLUST
     if (catBlocks.has(nextBlock)) {
 
-    //livesCount > 1 ? damage(nextBlock) : loseGame("GAME OVER 💀 Du blev uppäten av en katt!", nextBlock);
-	  damage(nextBlock);
+	    damage(nextBlock);
       return;
     }
 
@@ -306,15 +304,15 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
       lastItemIndex = nextIndex;
       switch (nextBlock) {
         case 20: // Eat cheese
-          
-          if (score.cheeseCount % 3 === 0) addLives(1);
           checkEagleSpawn();
 
-          shakeWrap.classList.add("eating");
-
           updateScore(score.cheeseCount++);
-          shakeWrap.classList.add("eating");
+          if (score.cheeseCount % 3 === 0) {
+            addLives(1);
+            console.log(score.cheeseCount === 3 ? `Ate 3 cheeses (+1 HP).` : `Ate 3 more cheeses (+1 HP).`);
+          }
 
+          shakeWrap.classList.add("eating");
           shakeWrap.addEventListener("animationend", () => {
               shakeWrap.classList.remove("eating");
 
@@ -352,7 +350,7 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
       }
     }
   };
-  console.log("Flyttar sork till utgångsposition.");
+  console.log("Moving Sorken to spawn.");
   move(1, 0, "down");
 
   function xyToTile(x, y) {
@@ -410,16 +408,16 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
         move(0, 0, "down");
         break;
     }
-    console.log(
-      "Keypress: " +
-        event +
-        " key: " +
-        keyCode +
-        " new pos: " +
-        rockford.offsetLeft +
-        ", " +
-        rockford.offsetTop
-    );
+    // console.log(
+    //   "Keypress: " +
+    //     event +
+    //     " key: " +
+    //     keyCode +
+    //     " new pos: " +
+    //     rockford.offsetLeft +
+    //     ", " +
+    //     rockford.offsetTop
+    // );
   }
 
   function updateScore(val) {
@@ -461,7 +459,7 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
       if (msLeft === 0) {
         clearInterval(x);
         timer.classList.add("timesup");
-        gameAlert("TIDEN ÄR UTE!");
+        loseGame('timesup');
       }
     }, 250);
   }
@@ -538,8 +536,7 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
         gameBlocks[target] = catValue;
 
         if (target === pIndex) 
-			damage(catValue);
-			//livesCount > 1 ? damage(enemy) : loseGame("GAME OVER 💀 Du blev uppäten av en katt!", catValue);
+			  damage(catValue);
       });
 
       area.querySelectorAll(".tile").forEach((t) => t.remove());
@@ -611,6 +608,8 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
   function checkEagleSpawn() {
     if (eagleIndex !== null) return;
     if (countRemainingCheese() > 2) return;
+    
+    const gameEvent = gameEvents.find(obj => obj.type === 'eagleSpawn') ?? null;
 
     // Random Eagle Spawn
 
@@ -621,11 +620,9 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
     eagleIndex = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
     gameBlocks[eagleIndex] = EAGLE_ID;
 
-    eagleAlert("A WILD EAGLE APPEARS!");
+    eagleAlert("EN VILD ÖRN DYKER UPP! 🦅");
 
-    eagleSpawnSound.currentTime = 0;
-    eagleSpawnSound.play().catch(() => {});
-
+    playSound(gameEvent.sound);
     startEagle();
 
   }
@@ -659,7 +656,6 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
       // Collision
       if (eagleIndex === px + py * gridSize) {
 		    damage('eagle');
-		    //livesCount > 1 ? hurt("eagle") : loseGame("GAME OVER 💀 Du blev tagen av örnen!", "eagle");
       }
 
       area.querySelectorAll(".tile").forEach((t) => t.remove());
@@ -714,35 +710,44 @@ const boundPortals = bindPortals(90,91,92,93,94,95);
 
   // Inflict damage
 	function damage(enemyType) {
-    if (!enemyType || !enemy) return;
+    if (!enemyType || !enemies) return;
 
-    let enemyData;
-    for (let obj of enemy) {
+    let enemy;
+    for (let obj of enemies) {
       if (obj.id === enemyType || obj.type == enemyType) { // Hämta första objektet som innehåller antingen id eller typ.
-        enemyData = obj;
+        enemy = obj;
         break;
       }
     }
 
-    console.log(`Damage by ${enemyData.type}: ${enemyData.hp}.`);
+    updateScore(score[enemy.type + 'Encounters']++); // Update scores.
+
+    console.log(`Damage from ${enemy.type} (-${enemy.hp} HP).`);
 
     if (livesCount > 1) { // Om mer än 1hp finns kvar
-      shakeWrap.classList.remove('nibbed'); // Ta bort nibbed-classen för säkerhets skull.
-      void shakeWrap.offsetWidth; // Återställ för att kunna köra animation direkt igen.
+      // shakeWrap.classList.remove('nibbed'); // Ta bort nibbed-classen för säkerhets skull.
+      // void shakeWrap.offsetWidth; // Återställ för att kunna köra animation direkt igen.
       shakeWrap.classList.add('nibbed'); // Lägg till nibbeed-classen för att köra animation.
+      shakeWrap.addEventListener("animationend", () => {
+          shakeWrap.classList.remove("nibbed");
+      });
 
-      enemyData.sound.currentTime = 0;
-      enemyData.sound.play().catch(err => console.log('Audio blocked:', err)); // Spela fiendeljud.
-      removeLives(enemyData.hp); // Ta bort hp.
+      playSound(enemy.sound);
+      removeLives(enemy.hp); // Ta bort hp.
     } else {
-      console.log(`Killed by ${enemyData.type}.`);
-      loseGame(enemyData.type); // Om ingen hälsa kvar, förlora.
+      console.log(`Killed by ${enemy.type}.`);
+      loseGame(enemy.type); // Om ingen hälsa kvar, förlora.
     }
 	}
 
 //   function addTime(seconds) {
 
 //   }
+
+  function playSound(sound) {
+      sound.file.currentTime = 0;
+      sound.file.play().catch(err => console.log('Audio blocked:', err));
+  }
 
   console.log("Everything is ready.");
 });
