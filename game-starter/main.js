@@ -30,6 +30,7 @@ window.addEventListener("DOMContentLoaded", function () {
     gridSize = 24, // Grid size 24x24
     gameStarted = false,
 	  livesCount = Number(),
+    lastItemIndex,
 
     /**
      * This is the background for the game area.
@@ -237,9 +238,8 @@ function bindPortals(blockNr) {
   return portals;
 }
 // Store the portals array so move() and portal() can access it
-const boundPortals = bindPortals(90);
-    
-    
+const boundPortals = bindPortals(90,91,92,93,94,95);
+
 
     /**
      * Move Sorken
@@ -252,22 +252,22 @@ const boundPortals = bindPortals(90);
 		}
 		
 		function portal(BlockNr) {
-  let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
+      let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
 
-  let enteredPortal = boundPortals.find(portal => portal.index === portalIndex);
+      let enteredPortal = boundPortals.find(portal => portal.index === portalIndex);
 
-  let targetPortalID = enteredPortal.targetPortal;
+      let targetPortalID = enteredPortal.targetPortal;
 
-  let targetPortal = boundPortals.find(portal => portal.id === targetPortalID);
+      let targetPortal = boundPortals.find(portal => portal.id === targetPortalID);
 
-  if (gameBlocks[targetPortal.index] === BlockNr) {
-    posLeft = targetPortal.x;
-    posTop = targetPortal.y;
-    moveIt();
-  }
+      if (gameBlocks[targetPortal.index] === BlockNr) {
+        posLeft = targetPortal.x;
+        posTop = targetPortal.y;
+        moveIt();
+      }
 
-  gameBlocks[portalIndex] = 10;
-}
+      gameBlocks[portalIndex] = 89; // Let the portal cave in.
+    }
 
     if (which) {
       rockford.className = "baddie " + which;
@@ -280,30 +280,33 @@ const boundPortals = bindPortals(90);
     if (gameOver) return;
 
     const nextIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
+
     if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
+    
 
     const nextBlock = gameBlocks[nextIndex];
 
     // 🐱 KATT = FÖRLUST
     if (catBlocks.has(nextBlock)) {
 
-      //livesCount > 1 ? damage(nextBlock) : loseGame("GAME OVER 💀 Du blev uppäten av en katt!", nextBlock);
+    //livesCount > 1 ? damage(nextBlock) : loseGame("GAME OVER 💀 Du blev uppäten av en katt!", nextBlock);
 	  damage(nextBlock);
       return;
     }
 
     // First if means the baddie can movie
-    let tilePosition = posLeft + moveLeft + (posTop + moveTop) * gridSize;
-
     if (!(nextBlock - 10)) {
       posLeft += moveLeft;
       posTop += moveTop;
       moveIt();
     } else {
       // If not possible to move:
+      // Checks if player has moved since last updateScore.
+      if (lastItemIndex === nextIndex) return;
+      lastItemIndex = nextIndex;
       switch (nextBlock) {
         case 20: // Eat cheese
-          updateScore(score.cheeseCount++);
+          
           if (score.cheeseCount % 3 === 0) addLives(1);
           checkEagleSpawn();
 
@@ -316,8 +319,8 @@ const boundPortals = bindPortals(90);
               shakeWrap.classList.remove("eating");
 
               area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan, except for baddie.
-              gameBlocks[tilePosition] = 10;
-              gameArea[tilePosition] = 28;
+              gameBlocks[nextIndex] = 10;
+              gameArea[nextIndex] = 28;
               drawGamePlan(gameArea, gameBlocks);
               rockford = document.getElementById("baddie1");
               moveIt();
@@ -327,8 +330,8 @@ const boundPortals = bindPortals(90);
           break;
 
         case 22: // Get the Power Rod of Enlightment
-          gameBlocks[tilePosition] = 10;
-          gameArea[tilePosition] = 28;
+          gameBlocks[nextIndex] = 10;
+          gameArea[nextIndex] = 28;
           drawGamePlan(gameArea, gameBlocks);
           rockford = document.getElementById("baddie1");
           moveIt();
@@ -336,7 +339,12 @@ const boundPortals = bindPortals(90);
           break;
 
 				case 90: // Get into portal
-					portal(90);
+        case 91:
+        case 92:
+        case 93:
+        case 94:
+        case 95:
+					portal(nextBlock);
 					break;
 
         default:
