@@ -336,6 +336,7 @@ body {
   border-bottom-right-radius: 4px;
   display: flex;
   gap: 1.5rem;
+  z-index: 10;
 
   & span:not(.score) {
     padding-right: 1rem;
@@ -394,6 +395,7 @@ body {
   border: 1rem solid rgba(0,0,0,.66);
   background-color: transparent;
   border-radius: 4px;
+  overflow: hidden;
 }
 #game-alert {
   position: absolute;
@@ -402,6 +404,7 @@ body {
   padding: 1rem;
   background-color: rgba(0,0,0,.66);
   border-radius: 4px;
+  z-index: 10;
 }
 #game-alert::after {
   content: "Tryck på mellanslag (space) för att försöka igen.";
@@ -437,6 +440,23 @@ body {
   -ms-transition-timing-function: ease;
   -o-transition-timing-function: ease;
   transition-timing-function: ease;
+}
+.baddie::after {
+  display: none;
+}
+
+.lightsout .baddie::after {
+  content: "";
+  display: block;
+  background: radial-gradient(rgba(0,0,0,0) 10%, rgba(0,0,0,.95) 25%);
+  width: 1536px;
+  height: 1536px;
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  transition: opacity 5s ease;
 }
 .baddie.up {
   background-position: -96px 0;
@@ -514,6 +534,8 @@ body {
  .b20 {background-image:url(img/tiles/floor/grass_0_old-cheese.png);} /* Hel ost */
  .b21 {background-image:url(img/tiles/floor/grass_0_old-cheese-halfeaten.png);} /* Halv ost */
  .t28 {background-image:url(img/tiles/floor/grass_0_old-cheese-eaten.png);} /* Uppäten ost. OBS, notera class! */
+
+ .b22 {background-image:url(img/tiles/items/rod_3_old.png), url(img/tiles/floor/grass_0_old-cheese-eaten.png);}
 
 
 
