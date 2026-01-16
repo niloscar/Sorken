@@ -3,7 +3,9 @@
  */
 window.addEventListener('DOMContentLoaded', function () {
 	'use strict';
+	initTouchControls();
   	const score = {cheeseCount: 0, catEncounters: 0};
+	const body = document.querySelector('body');
   	let rockford = document.getElementById('baddie1'),
 	shakeWrap = document.getElementById('shake-wrap'),
     area = document.getElementById('flash'),
@@ -11,7 +13,7 @@ window.addEventListener('DOMContentLoaded', function () {
     top  = area.offsetTop,
     posLeft = 0,    // Steps right/left
     posTop = 0,     // Steps up/down
-    tileSize = 32,  // Tile size in height/width -> 32px
+    tileSize = (isTouchDevice()) ? 14 : 32,  // Tile size in height/width
     gridSize = 24,  // Grid size 24x24
     gameStarted = false,
 
@@ -111,6 +113,7 @@ window.addEventListener('DOMContentLoaded', function () {
 	function loseGame(catValue) {
     	gameOver = true;
 
+		body.classList.add('gameover');
 		shakeWrap.classList.add('eaten');
 
     	const sound = catSounds[catValue];
@@ -215,26 +218,36 @@ window.addEventListener('DOMContentLoaded', function () {
     }
     
     /**
-     * Keep track on keys pressed and move Sorken accordingly.
+     * Keep track on keys (and toch controls) pressed and move Sorken accordingly.
     */
-	document.onkeydown = function(event) {
-		let key;
-		key = event.keyCode || event.which;
+	// Key codes.
+	const k = {
+		space: 32,
+		left: 37,
+		right: 39,
+		up: 38,
+		down: 40,
+	};
+
+	document.onkeydown = (event) => keyDown(event.keyCode || event.which);
+	
+	if (isTouchDevice()) {
+		const touchControls = body.querySelector('#touch-controls');
+		const touchKeys = touchControls?.querySelectorAll('button[id^="touch-"]');
+		for(let key of touchKeys) key.addEventListener('touchstart', () => {
+			const keyCode = Number(k[key.id.trim().split('-')[1]]);
+			keyDown(keyCode);
+		});
+	}
+
+	function keyDown (keyCode) {
 
 		if (!gameStarted) {
 			timer(true);
 			gameStarted = true;
 		}
 
-		const k = {
-			space: 32,
-			left: 37,
-			right: 39,
-			up: 38,
-			down: 40,
-		};
-
-		switch (key) {
+		switch (keyCode) {
 			case k.left:
 				move(-1, 0, 'left');
 				break;
@@ -255,7 +268,7 @@ window.addEventListener('DOMContentLoaded', function () {
 				move(0, 0, 'down');
 				break;
 		}
-		console.log('Keypress: ' + event + ' key: ' + key + ' new pos: ' + rockford.offsetLeft + ', ' + rockford.offsetTop);
+		console.log('Keypress: ' + event + ' key: ' + keyCode + ' new pos: ' + rockford.offsetLeft + ', ' + rockford.offsetTop);
   	};
 
 	function updateScore(val) {
@@ -306,77 +319,110 @@ window.addEventListener('DOMContentLoaded', function () {
 		const el = document.createElement('div');
 		el.id = 'game-alert';
 		el.innerText = message;
-		document.querySelector('body').append(el);
+		body.append(el);
 
 		document.onkeydown = (event) => {
 			if ((event.keyCode || event.which) === 32) location.reload();
 		}
 	}
 
-// Cats moving around
+	// Cats moving around
 
-(function startMovingCats() {
+	(function startMovingCats() {
 
-  const CAT_IDS = [55, 56, 57, 58, 59];
-  const EMPTY = 10;
-  const INTERVAL = 700;
+	const CAT_IDS = [55, 56, 57, 58, 59];
+	const EMPTY = 10;
+	const INTERVAL = 700;
 
-  function getCatIndexes() {
-    return gameBlocks
-      .map((v, i) => CAT_IDS.includes(v) ? i : -1)
-      .filter(i => i !== -1);
-  }
+	function getCatIndexes() {
+		return gameBlocks
+		.map((v, i) => CAT_IDS.includes(v) ? i : -1)
+		.filter(i => i !== -1);
+	}
 
-  function neighbors(index) {
-    const x = index % gridSize;
-    const y = Math.floor(index / gridSize);
+	function neighbors(index) {
+		const x = index % gridSize;
+		const y = Math.floor(index / gridSize);
 
-    return [
-      [x + 1, y],
-      [x - 1, y],
-      [x, y + 1],
-      [x, y - 1],
-    ]
-      .filter(([nx, ny]) =>
-        nx >= 0 && ny >= 0 &&
-        nx < gridSize && ny < gridSize
-      )
-      .map(([nx, ny]) => nx + ny * gridSize);
-  }
+		return [
+		[x + 1, y],
+		[x - 1, y],
+		[x, y + 1],
+		[x, y - 1],
+		]
+		.filter(([nx, ny]) =>
+			nx >= 0 && ny >= 0 &&
+			nx < gridSize && ny < gridSize
+		)
+		.map(([nx, ny]) => nx + ny * gridSize);
+	}
 
-  function moveCats() {
-    if (gameOver) return;
+	function moveCats() {
+		if (gameOver) return;
 
-    const cats = getCatIndexes();
+		const cats = getCatIndexes();
 
-    cats.forEach(catIndex => {
-      const moves = neighbors(catIndex)
-        .filter(i => gameBlocks[i] === EMPTY);
+		cats.forEach(catIndex => {
+		const moves = neighbors(catIndex)
+			.filter(i => gameBlocks[i] === EMPTY);
 
-      if (!moves.length) return;
+		if (!moves.length) return;
 
-      const target = moves[Math.floor(Math.random() * moves.length)];
-      const catValue = gameBlocks[catIndex];
+		const target = moves[Math.floor(Math.random() * moves.length)];
+		const catValue = gameBlocks[catIndex];
 
-      gameBlocks[catIndex] = EMPTY;
-      gameBlocks[target] = catValue;
+		gameBlocks[catIndex] = EMPTY;
+		gameBlocks[target] = catValue;
 
-      // Collision with player
-      if (target === posLeft + posTop * gridSize) {
-        loseGame(catValue);
-      }
-    });
+		// Collision with player
+		if (target === posLeft + posTop * gridSize) {
+			loseGame(catValue);
+		}
+		});
 
-    area.querySelectorAll('.tile').forEach(t => t.remove());
-    drawGamePlan(gameArea, gameBlocks);
-  }
+		area.querySelectorAll('.tile').forEach(t => t.remove());
+		drawGamePlan(gameArea, gameBlocks);
+	}
 
-  setInterval(moveCats, INTERVAL);
+	setInterval(moveCats, INTERVAL);
 
-})();
+	})();
+
+	// Check if player is on touch device
+	function isTouchDevice () { return navigator.maxTouchPoints > 0 };
+
+	// Initialize touch controls
+	function initTouchControls() {
+		if (isTouchDevice()) {
+			const touchControls = [
+				{id: 'touch-controls', type: 'div', parent: 'body'},
+				{id: 'touch-left', type: 'button', parent: '#touch-controls'},
+				{id: 'touch-right', type: 'button', parent: '#touch-controls'},
+				{id: 'touch-up', type: 'button', parent: '#touch-controls'},
+				{id: 'touch-down', type: 'button', parent: '#touch-controls'}
+			];
+
+			for(let obj of touchControls) {
+				const parent = document.querySelector(obj.parent),
+					el = document.createElement(obj.type);
+					el.addEventListener('pointerdown', () => el.classList.add('active'));
+					['pointerup','pointercancel','pointerleave'].forEach((ev) => { el.addEventListener(ev, () => el.classList.remove('active')) });
+					
+				el.id = obj.id;
+				parent.append(el);
+			}
+			
+			let lastTouchEnd = 0;
+
+			document.addEventListener('touchend', function (e) {
+				const now = Date.now();
+				if (now - lastTouchEnd <= 300) {
+					e.preventDefault();
+				}
+				lastTouchEnd = now;
+			}, { passive: false });
+		}
+	}
 
   	console.log('Everything is ready.');  
 });
-
-
-//  second merge haha
