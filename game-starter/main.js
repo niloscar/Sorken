@@ -126,13 +126,22 @@ window.addEventListener("DOMContentLoaded", function () {
 
   // katt eller örn?
 
-  function loseGame(reason, soundId = null) {
+  const eagleSound = new Audio("/game-starter/sounds/eagle.mp3");
+  eagleSound.preload = "auto";
+  eagleSound.volume = 0.9;
+
+  // katt eller örn?
+function loseGame(reason, soundId = null) {
 	gameOver = true;
 
 	body.classList.add('gameover');
 	shakeWrap.classList.add('eaten');
 
-	if (soundId && catSounds[soundId]) {
+	if (soundId === "eagle") {
+		eagleSound.currentTime = 0;
+		eagleSound.play().catch(err => console.log('Audio blocked:', err));
+	}
+	else if (soundId && catSounds[soundId]) {
 		const sound = catSounds[soundId];
 		sound.currentTime = 0;
 		sound.play().catch(err => console.log('Audio blocked:', err));
@@ -140,6 +149,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 	gameAlert(reason);
 }
+
 
 
   function eagleAlert(message) {
@@ -550,7 +560,8 @@ window.addEventListener("DOMContentLoaded", function () {
 
       // Collision
       if (eagleIndex === px + py * gridSize) {
-        loseGame("GAME OVER 💀 Du blev tagen av örnen!");
+        loseGame("GAME OVER 💀 Du blev tagen av örnen!", "eagle");
+
 
       }
 
