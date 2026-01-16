@@ -30,6 +30,7 @@ window.addEventListener("DOMContentLoaded", function () {
     gridSize = 24, // Grid size 24x24
     gameStarted = false,
 	  livesCount = Number(),
+    lastItemIndex,
 
     /**
      * This is the background for the game area.
@@ -280,7 +281,9 @@ const boundPortals = bindPortals(90);
     if (gameOver) return;
 
     const nextIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
+
     if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
+    
 
     const nextBlock = gameBlocks[nextIndex];
 
@@ -292,8 +295,6 @@ const boundPortals = bindPortals(90);
       return;
     }
 
-    let tilePosition = posLeft + moveLeft + (posTop + moveTop) * gridSize;
-
     // First if means the baddie can movie
     if (!(nextBlock - 10)) {
       posLeft += moveLeft;
@@ -301,10 +302,13 @@ const boundPortals = bindPortals(90);
       moveIt();
     } else {
       // If not possible to move:
+      // Checks if player has moved since last updateScore.
+      if (lastItemIndex === nextIndex) return;
+      lastItemIndex = nextIndex;
       switch (nextBlock) {
         case 20: // Eat cheese
-          console.log('x',posLeft,'y',posTop,'nextBlock',nextBlock);
-          updateScore(score.cheeseCount++);
+          console.log('lastIndex', lastIndex,'nextIndex', nextIndex);
+          
           if (score.cheeseCount % 3 === 0) addLives(1);
           checkEagleSpawn();
 
@@ -317,8 +321,8 @@ const boundPortals = bindPortals(90);
               shakeWrap.classList.remove("eating");
 
               area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan, except for baddie.
-              gameBlocks[tilePosition] = 10;
-              gameArea[tilePosition] = 28;
+              gameBlocks[nextIndex] = 10;
+              gameArea[nextIndex] = 28;
               drawGamePlan(gameArea, gameBlocks);
               rockford = document.getElementById("baddie1");
               moveIt();
@@ -328,8 +332,8 @@ const boundPortals = bindPortals(90);
           break;
 
         case 22: // Get the Power Rod of Enlightment
-          gameBlocks[tilePosition] = 10;
-          gameArea[tilePosition] = 28;
+          gameBlocks[nextIndex] = 10;
+          gameArea[nextIndex] = 28;
           drawGamePlan(gameArea, gameBlocks);
           rockford = document.getElementById("baddie1");
           moveIt();
