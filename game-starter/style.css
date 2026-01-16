@@ -286,7 +286,7 @@ tfoot {
  * 
  */
 body {
-  background: no-repeat center / cover url(img/bg2.png);
+  background: no-repeat center / cover url(img/bg2.webp);
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
