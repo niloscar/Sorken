@@ -156,43 +156,100 @@ function loseGame(reason, soundId = null) {
 
 
   function eagleAlert(message) {
-	const el = document.createElement('div');
-	el.id = 'game-alert';
-	el.classList.add('eagle-alert');
-	el.innerText = message;
+    const el = document.createElement('div');
+    el.id = 'game-alert';
+    el.classList.add('eagle-alert');
+    el.innerText = message;
 
-	const scrollY = window.scrollY || window.pageYOffset;
-	const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+    const scrollX = window.scrollX || window.pageXOffset;
 
-	el.style.position = 'absolute';
-	el.style.top = (scrollY + window.innerHeight / 2) + 'px';
-	el.style.left = (scrollX + window.innerWidth / 2) + 'px';
-	el.style.transform = 'translate(-50%, -50%)';
+    el.style.position = 'absolute';
+    el.style.top = (scrollY + window.innerHeight / 2) + 'px';
+    el.style.left = (scrollX + window.innerWidth / 2) + 'px';
+    el.style.transform = 'translate(-50%, -50%)';
 
-	body.append(el);
+    body.append(el);
 
-	setTimeout(() => el.remove(), 2000);
+    setTimeout(() => el.remove(), 2000);
+  }
+    
+function bindPortals(blockNr) {
+  const isPortal = blockNr; // Define what block numbers are portals
+  const portals = [];
+  const targetPortals = [];
+  let portalId = 0;
+
+  // Iterate through gameBlocks to find all portals
+  gameBlocks.forEach((block, index) => {
+    if (block === isPortal) {
+      const x = index % gridSize; // Convert index to x position
+      const y = Math.floor(index / gridSize); // Convert index to y position
+
+      portals.push({
+        id: portalId,
+        // blockValue: block,
+        x: x,
+        y: y,
+        index: index,
+      });
+
+      targetPortals.push(portalId);
+
+      portalId++;
+    }
+  });
+
+  portals.forEach(portalObject => {
+    let target = targetPortals[Math.floor(Math.random() * targetPortals.length)];
+
+    while (portalObject.id === target && targetPortals.length > 1) {
+      console.log('clash!');
+      target = targetPortals[Math.floor(Math.random() * targetPortals.length)];
+    }
+
+    portalObject.targetPortal = target;
+    targetPortals.splice(targetPortals.indexOf(target), 1); // Remove only 1 element
+
+    console.log(`portal ${portalObject.id} targets ${portalObject.targetPortal}`);
+  });
+
+  console.log(portals);
+
+  return portals;
 }
+// Store the portals array so move() and portal() can access it
+const boundPortals = bindPortals(90);
+    
+    
 
+    /**
+     * Move Sorken
+     */
+   	let move = function(moveLeft, moveTop, which) {
+		
+		function moveIt() {
+			rockford.style.left = (posLeft * tileSize) + 'px';
+			rockford.style.top  = (posTop  * tileSize) + 'px';
+		}
+		
+		function portal(BlockNr) {
+  let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
 
+  let enteredPortal = boundPortals.find(portal => portal.index === portalIndex);
 
-  /**
-   * Move Sorken
-   */
-  let move = function (moveLeft, moveTop, which) {
-    function moveIt() {
-      rockford.style.left = posLeft * tileSize + "px";
-      rockford.style.top = posTop * tileSize + "px";
-    }
+  let targetPortalID = enteredPortal.targetPortal;
 
-    function portal(portal1, portal2) {
-      // Make a pair of gameblocks into two-way portals. (n.index of portal 1, n.index portal 2)
-      let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize; // position of enter portal/player
-      let targetIndex = portalIndex === portal1 ? portal2 : portal1; // position of portal player exits
-      posLeft = targetIndex % gridSize; // calculates the new column position of player - Had to leverage AI for this calculation ._.
-      posTop = Math.floor(targetIndex / gridSize); // calculates the new row position of player
-      moveIt();
-    }
+  let targetPortal = boundPortals.find(portal => portal.id === targetPortalID);
+
+  if (gameBlocks[targetPortal.index] === BlockNr) {
+    posLeft = targetPortal.x;
+    posTop = targetPortal.y;
+    moveIt();
+  }
+
+  gameBlocks[portalIndex] = 10;
+}
 
     if (which) {
       rockford.className = "baddie " + which;
@@ -234,9 +291,7 @@ function loseGame(reason, soundId = null) {
           updateScore(score.cheeseCount++);
           shakeWrap.classList.add("eating");
 
-          shakeWrap.addEventListener(
-            "animationend",
-            () => {
+          shakeWrap.addEventListener("animationend", () => {
               shakeWrap.classList.remove("eating");
 
               area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan, except for baddie.
@@ -259,9 +314,9 @@ function loseGame(reason, soundId = null) {
           area.classList.toggle("lightsout");
           break;
 
-        case 90: // Get into portal
-          portal(88, 409);
-          break;
+				case 90: // Get into portal
+					portal(90);
+					break;
 
         default:
           console.log("Block detected, cant move.");
