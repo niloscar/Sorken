@@ -690,6 +690,8 @@ body {
   background: no-repeat center / cover url(sorken.img/felids/cat_6.png);
 }
 
+.b89 { background: no-repeat center / cover url(img/tiles/floor/grass_0_old-hole_filled.png); }
+
 /*Portals*/
 .b90,
 .b91,
@@ -700,11 +702,7 @@ body {
 .b96,
 .b97,
 .b98,
-.b99 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_0_old-hole.png);
-  background-position: center;
-  background-size: cover;
-}
+.b99 { background: no-repeat center / cover url(img/tiles/floor/grass_0_old-hole.png); }
 
 @keyframes eating {
   0%   { transform: translate(0px, 0px) rotate(0deg)     scale(1.000) skew(0deg, 0deg); }

@@ -238,9 +238,8 @@ function bindPortals(blockNr) {
   return portals;
 }
 // Store the portals array so move() and portal() can access it
-const boundPortals = bindPortals(90);
-    
-    
+const boundPortals = bindPortals(90,91,92,93,94,95);
+
 
     /**
      * Move Sorken
@@ -267,7 +266,7 @@ const boundPortals = bindPortals(90);
         moveIt();
       }
 
-      gameBlocks[portalIndex] = 10;
+      gameBlocks[portalIndex] = 89; // Let the portal cave in.
     }
 
     if (which) {
@@ -340,7 +339,12 @@ const boundPortals = bindPortals(90);
           break;
 
 				case 90: // Get into portal
-					portal(90);
+        case 91:
+        case 92:
+        case 93:
+        case 94:
+        case 95:
+					portal(nextBlock);
 					break;
 
         default:
