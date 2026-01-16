@@ -323,7 +323,12 @@ body {
   }
 
   &.nibbed { 
-    animation: nibbed 180ms linear; 
+    animation: nibbed 180ms linear;
+
+    & span#score-cats {
+      transform: scale(500%) rotate(22deg);
+      color: red;
+    }
   }
 
   &.eaten { 
