@@ -49,7 +49,7 @@ window.addEventListener('DOMContentLoaded', function () {
       19,10,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
       19,10,10,10,10,19,90,10,10,10,10,10,19,10,10,10,10,10,10,19,91,10,10,19,
       19,10,19,19,10,19,19,19,19,19,19,10,19,10,10,10,10,10,10,19,19,19,10,19,
-      19,10,19,10,10,10,10,19,55,10,10,10,19,10,10,10,90,10,10,10,10,19,10,19,
+      19,10,19,22,10,10,10,19,55,10,10,10,19,10,10,10,90,10,10,10,10,19,10,19,
       19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
       19,20,10,10,10,10,10,10,10,10,10,10,20,19,10,10,10,10,10,56,10,10,10,19,
       19,19,19,19,19,19,19,19,19,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,
@@ -57,7 +57,7 @@ window.addEventListener('DOMContentLoaded', function () {
       19,10,10,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,19,19,19,19,10,19,
       19,10,10,10,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,19,
       19,19,19,19,10,19,19,19,19,19,10,19,10,10,10,10,10,10,10,19,10,19,19,19,
-      19,10,10,10,10,10,10,19,10,10,10,19,10,10,10,10,10,10,10,10,10,10,10,19,
+      19,10,10,10,10,10,10,19,10,10,10,19,10,10,22,10,10,10,10,10,10,10,10,19,
       19,10,19,19,19,19,10,19,10,19,19,19,10,10,58,10,10,10,10,19,19,19,10,19,
       19,10,90,19,20,10,10,19,10,10,10,19,19,19,19,19,19,19,19,19,10,10,10,19,
       19,19,19,19,19,19,10,19,19,19,10,10,10,10,10,10,10,10,10,10,10,19,19,19,
@@ -67,10 +67,11 @@ window.addEventListener('DOMContentLoaded', function () {
       19,19,19,19,19,19,19,19,19,19,19,19,10,10,10,10,10,10,20,19,10,19,19,19,
       19,10,10,10,10,10,10,19,10,10,10,19,19,19,19,19,10,19,19,19,10,19,93,19,
       19,10,10,10,10,10,10,19,10,19,10,10,92,19,20,19,10,10,10,19,10,19,10,19,
-      19,10,10,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,10,19,10,10,10,19,
+      19,10,22,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,10,19,10,10,10,19,
       19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,10,19,10,19,
       19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19
     ];
+	area.classList.add('lightsout');
 
     /**
      * Draw the initial gameplan
@@ -166,17 +167,10 @@ window.addEventListener('DOMContentLoaded', function () {
 			posLeft += moveLeft; 
 			posTop  += moveTop;
 			moveIt();
-		} else if (nextBlock === 90) {
-			portal(88, 409);
 		} else {
 			// If not possible to move:
-			switch(tilePosition) {
-				case 121:
-				case 132:
-				case 316:
-				case 382:
-				case 450:
-				case 494:
+			switch(nextBlock) {
+				case 20: // Eat cheese
 				
 					updateScore(score.cheeseCount++);
 					shakeWrap.classList.add('eating');
@@ -192,6 +186,19 @@ window.addEventListener('DOMContentLoaded', function () {
 						moveIt();
 					
 					}, { once: true });
+					break;
+
+				case 22: // Get the Power Rod of Enlightment
+					gameBlocks[tilePosition] = 10;
+					gameArea[tilePosition] = 28;
+					drawGamePlan(gameArea, gameBlocks);
+					rockford = document.getElementById('baddie1');
+					moveIt();
+					area.classList.toggle('lightsout');
+					break;
+
+				case 90: // Get into portal
+					portal(88, 409);
 					break;
 
 				default:
@@ -277,7 +284,6 @@ window.addEventListener('DOMContentLoaded', function () {
 		const end = Date.now() + totSeconds * 1000;
 
 		const now = new Date();
-		let countDownTime = new Date(now.getTime() + minutes * (seconds == 0 ? 60 : seconds) * 1000);
 
 		const x = setInterval(() => {
 			const msLeft = Math.max(0, end - Date.now());
