@@ -709,7 +709,7 @@ body {
   background: no-repeat center / cover url(sorken.img/felids/cat_6.png);
 }
 
-.b89 {
+.t89, .b89 {
   background: no-repeat center / cover
     url(img/tiles/floor/grass_0_old-hole_filled.png);
 }
