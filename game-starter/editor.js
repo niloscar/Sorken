@@ -56,6 +56,10 @@ const cfg = {
             name: 'Cheese',
             className: 20,
         },
+        {
+            name: 'Rod of Enlightment',
+            className: 22,
+        },
     ],
     items: [],
 };
