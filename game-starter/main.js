@@ -422,7 +422,14 @@ window.addEventListener('DOMContentLoaded', function () {
         case 93:
         case 94:
         case 95:
+          shakeWrap.classList.add('digging');
+          shakeWrap.addEventListener('animationend', () => shakeWrap.classList.remove('digging'));
           portal(nextBlock, true);
+          break;
+
+        case 99:
+          // gameWon();
+          alert('Du vann!');
           break;
 
         default:
