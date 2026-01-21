@@ -111,6 +111,7 @@ window.addEventListener("DOMContentLoaded", function () {
       10, 10, 10, 10, 10, 10, 10, 19, 10, 19, 10, 19, 19, 19, 19, 19, 19, 19,
       19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 10, 19,
     ];
+
   initTouchControls();
   initLives();
 
