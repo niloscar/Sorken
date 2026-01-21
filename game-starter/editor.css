@@ -202,4 +202,20 @@ div#flash {
         font-size: .8em;
         line-height: 2.2em;
     }
+
+    & button {
+        position: absolute;
+        display: block;
+        top: 0;
+        right: 0;
+        height: calc(var(--spacing) * 2);
+        border: none;
+        background: none;
+        font-size: 1em;
+
+        &:hover {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    }
 }

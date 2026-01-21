@@ -307,7 +307,13 @@ initSidebar();
 function exportMap() {
     dom.modal = document.createElement('div');
     dom.wrapper = document.createElement('div');
+    dom.closeBtn = document.createElement('button');
+    dom.closeBtn.innerText = 'Close';
     dom.modal.appendChild(dom.wrapper);
+    dom.modal.appendChild(dom.closeBtn);
+    dom.closeBtn.addEventListener('click', e => {
+        dom.modal.remove();
+    })
     dom.modal.id = 'modal';
     state.map.export = [];
     const layers = ['tileLayer','blockLayer'];
