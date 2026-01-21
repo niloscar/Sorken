@@ -1,4 +1,54 @@
 /**
+ * Declare config object.
+ */
+
+const cfg = {
+    tools: [
+        {
+            name: 'Eraser',
+            className: 10,
+        },
+    ],
+    tiles: [
+        {
+            name: 'Grass',
+            className: [11, 12, 13],
+        },
+        {
+            name: 'Open door',
+            className: 35,
+        },
+    ],
+    blocks: [
+        {
+            name: 'Brick wall',
+            className: 30,
+        },
+        {
+            name: 'Metal wall',
+            className: 31,
+        },
+        {
+            name: 'Crystal wall',
+            className: 32,
+        },
+        {
+            name: 'Mirrored wall',
+            className: 33,
+        },
+        {
+            name: 'Green crystal wall',
+            className: 34,
+        },
+        {
+            name: 'Closed door',
+            className: 36,
+        },
+    ],
+    items: [],
+};
+
+/**
  * Declare DOM elements object.
  */
 const dom = {};
@@ -8,81 +58,283 @@ dom.area = document.getElementById('flash');
  * Declare state object.
  */
 const state = {};
+state.currentTool = {
+    type: 'blocks',
+    name: 'Brick wall',
+    className: 19,
+}
 state.map = {};
+state.painting = false;
+state.lastPaintedId = null;
 
 /**
  * Create blank sheet.
  * @param {number} width    - Width (tiles) of game area.
  * @param {number} height   - Height (tiles) of game area.
- * @param {number} tile     - Default tile type.
+ * @param {number} tile     - Tiletype to fill ground with.
  */
 function blankSheet(width, height, tile=10) {
-    state.map.blank = new Array(width * height).fill(tile)
-    for(let [i, tileType] of state.map.blank.entries()) {
-        const el = document.createElement('div');
-        el.id = `n${i}`;
-        el.classList.add(`tile`,`t${tileType}`);
-        dom.area.appendChild(el);
+    for (let layer of ['tileLayer','blockLayer']) {
+
+        state.map[layer] = document.createElement('div');
+        state.map[layer].id = layer;
+        dom.area.appendChild(state.map[layer]);
+
+        
+        if (layer === 'tileLayer') {
+            state.map[layer].classList.add('show');
+            state.map.active = layer;
+        }
+        let prefix = (layer === 'tileLayer') ? 't' : 'b';
+        
+        state.map.blank = new Array(width * height).fill(layer === 'tileLayer' ? tile : 10)
+
+        for(let [i, tileType] of state.map.blank.entries()) {
+            const el = document.createElement('div');
+            el.id = `${layer}_n${i}`;
+            el.classList.add(`tile`,`${prefix}${tileType}`);
+            state.map[layer].appendChild(el);
+        }
+
     }
+    state.map.meta = { width: width, height: height };
 }
-blankSheet(24, 24, 10);
+blankSheet(24, 24, 11);
+
+function updateActiveLayer() {
+    const blockOn = dom.inputs.blockLayer.checked;
+    const tileOn  = dom.inputs.tileLayer.checked;
+
+    state.map.active = blockOn 
+        ? 'blockLayer'
+        : tileOn  ? 'tileLayer'
+            : null;
+}
+
+function initSidebar() {
+    dom.sidebar = document.querySelector('aside');
+    dom.inputs = {};
+
+    for (const layer of ['blockLayer','tileLayer']) {
+        const group = document.createElement('div');
+        const input = document.createElement('input');
+        const label = document.createElement('label');
+
+        input.type = 'checkbox';
+        input.id = `input_${layer}`;
+        label.htmlFor = input.id;
+        label.textContent = layer;
+
+        dom.inputs[layer] = input;
+
+        if (layer === 'tileLayer') input.checked = true;
+
+        input.addEventListener('change', () => {
+            state.map[layer].classList.toggle('show', input.checked);
+            console.log(dom.inputs.blockLayer.checked);
+            document.querySelectorAll('.submenu-tiles')?.forEach(el => el.classList.toggle('show', !dom.inputs.blockLayer.checked));
+            updateActiveLayer();
+        });
+
+        group.append(input, label);
+        dom.sidebar.appendChild(group);
+    }
+
+    const button = document.createElement('button');
+    button.id = 'export-map';
+    button.innerText = 'Export';
+    button.addEventListener('click', (e) => exportMap());
+    dom.sidebar.appendChild(button);
+
+  state.map.tileLayer.classList.toggle('show', dom.inputs.tileLayer.checked);
+  state.map.blockLayer.classList.toggle('show', dom.inputs.blockLayer.checked);
+  console.log(document.querySelectorAll('.submenu-tiles'));
+  updateActiveLayer();
+}
+
 
 (() => {
     if (!dom.area) return;
-    const events = ['click','contextmenu'];
 
-    const tools = [
-        {
-            name: 'Grass',
-            className: '10',
-        },
-        {
-            name: 'Wall',
-            className: '19',
-        }
-    ]
-    let currentTool = 't19';
+    dom.menu = document.createElement('div');
+    dom.menu.id = 'context-menu';
+    document.querySelector('body').appendChild(dom.menu);
 
-    const menu = document.createElement('ul');
-    menu.id = 'context-menu';
-    document.querySelector('body').appendChild(menu);
 
-    for (let tool of tools) {
-        const el = document.createElement('li');
-        const img = document.createElement('i');
-        img.className = `tile t${tool.className}`;
-        el.innerText = 'Test';
-        el.prepend(img);
-        menu.append(el);
-        el.addEventListener('click', () => {
-            currentTool = `t${tool.className}`;
-            console.log(`t${tool.className}`);
-        });
+    contextMenuContent('tools');
+    contextMenuContent('tiles');
+    contextMenuContent('blocks');
+
+    document.addEventListener('click', (e) => {
+    if (dom.menu.classList.contains('open') && !dom.menu.contains(e.target)) {
+        dom.menu.classList.remove('open');
     }
+    });
 
-    for (let event of events) document.addEventListener(event, (e) => {
+    document.addEventListener('contextmenu', (e) => {
+        if (dom.menu.contains(e.target)) return;
+
+        // stoppa browser-menyn
         e.preventDefault();
 
-        if (event === 'click') {
-            if (menu.classList.contains('open')) {
-                menu.classList.remove('open');
-            } else {
-                if (!/n\d{1,3}/.test(e.target.id)) return;
-                for (const c of [...e.target.classList]) {
-                    if (/^t\d{2}$/.test(c)) e.target.classList.remove(c);
-                }
-                e.target.classList.add(currentTool);
-            }
-        }
+        // stoppa ev. pågående drag
+        state.painting = false;
 
-        if (event === 'contextmenu' && !menu.contains(e.target)) {
-            menu.classList.toggle('open');
-            menu.style.left = `${e.clientX - 16}px`;
-            menu.style.top = `${e.clientY -16}px`;
-        }
+        dom.menu.classList.add('open');
+        dom.menu.style.left = `${e.clientX - 16}px`;
+        dom.menu.style.top  = `${e.clientY - 16}px`;
     });
+
     
 })();
 
+function randCName(arr) {
+    console.log(arr);
+    console.log(Array.isArray(arr));
+    if (Array.isArray(arr)) {
+        const minCeiled = Math.ceil(0);
+        const maxFloored = Math.floor(arr.length - 1);
+        const result = arr[Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled)];
+        console.log(result);
+        return result;
+    } else {
+        return arr;
+    }
+}
+
+function applyToolToTile(tileEl) {
+  if (!tileEl || !tileEl.id) return;
+  if (!/_(n\d{1,4})$/.test(tileEl.id)) return; // matchar tileLayer_n123 osv
+
+  // undvik att måla samma tile flera gånger i rad
+  if (tileEl.id === state.lastPaintedId) return;
+  state.lastPaintedId = tileEl.id;
+
+  // rensa gamla tNN/bNN på elementet
+  for (const c of [...tileEl.classList]) {
+    if (/^[tb]\d{2}$/.test(c)) tileEl.classList.remove(c);
+  }
+
+  // välj prefix baserat på aktivt lager
+  const prefix = (state.map.active === 'blockLayer') ? 'b' : 't';
+  tileEl.classList.add(`${prefix}${randCName(state.currentTool.className)}`);
+}
+
+function tileUnderPointer(e) {
+  const layer = state.map.active;
+  if (!layer) return null;
+
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  return el?.closest?.(`#${layer} .tile`) ?? null;
+}
+
+document.addEventListener('pointerdown', (e) => {
+  // Endast vänsterknapp (hindrar målning vid högerklick)
+  if (e.button !== 0) return;
+
+  // Måla inte om menyn är öppen
+  if (dom.menu?.classList.contains('open')) return;
+
+  const tileEl = tileUnderPointer(e);
+  if (!tileEl) return;
+
+  state.painting = true;
+  state.lastPaintedId = null;
+  applyToolToTile(tileEl);
+});
+
+document.addEventListener('pointermove', (e) => {
+  if (!state.painting) return;
+
+  const tileEl = tileUnderPointer(e);
+  if (!tileEl) return;
+
+  applyToolToTile(tileEl);
+});
+
+function stopPaint() {
+  state.painting = false;
+  state.lastPaintedId = null;
+}
+
+document.addEventListener('pointerup', stopPaint);
+document.addEventListener('pointercancel', stopPaint);
 
 
+function contextMenuContent(tools) {
+
+    const prefix = (tools === 'tiles') ? 't' : 'b'; 
+    const heading = document.createElement('h4');
+
+    heading.innerText = tools;
+    dom.menu.appendChild(heading);
+
+    const submenu = document.createElement('ul');
+    dom.menu.appendChild(submenu);
+
+    heading.className = submenu.className = 'submenu-' + tools;
+    const show = (tools === 'blocks') || (state.map.active === 'tileLayer');
+    [heading, submenu].forEach(el => el.classList.toggle('show', show));
+
+    for (let tool of cfg[tools]) {
+
+        const el = document.createElement('li');
+        const img = document.createElement('i');
+
+        img.className = `tile ${prefix}${randCName(tool.className)}`;
+        el.innerText = tool.name;
+        el.prepend(img);
+        submenu.append(el);
+
+        el.addEventListener('click', () => {
+            state.currentTool = {
+                type: tools,
+                name: tool.name,
+                className: tool.className
+            };
+
+            dom.menu.querySelectorAll('.active').forEach(x => x.classList.remove('active'));
+            el.classList.add('active');
+
+            dom.menu.classList.remove('open'); // <- stäng direkt när man väljer
+        });
+
+    }
+}
+
+initSidebar();
+
+function exportMap() {
+    dom.modal = document.createElement('div');
+    dom.wrapper = document.createElement('div');
+    dom.modal.appendChild(dom.wrapper);
+    dom.modal.id = 'modal';
+    state.map.export = [];
+    const layers = ['tileLayer','blockLayer'];
+
+    const exportLayers = (layers) => {
+        for (let layer of layers) {
+            state.map.export[layer] = [];
+            const children = state.map[layer].children;
+            const re = (layer === 'tileLayer') ? /^t\d{2}$/ : /^b\d{2}$/;
+            for (const el of children) {
+                
+                const cls = [...el.classList].find(c => re.test(c));
+                console.log(cls);
+                state.map.export[layer].push(cls);
+            }
+        }
+    }
+
+    exportLayers(layers);
+
+    for (let i in state.map.export) {
+        dom['pre' + i] = document.createElement('pre');
+        dom['pre' + i].innerText = state.map.export[i]
+            .map((v, idx) => (idx > 0 && idx % state.map.meta.width === 0 ? '\n' : '') + v)
+            .join(',');
+        dom.wrapper.appendChild(dom['pre' + i]);
+    }
+
+    document.querySelector('body').appendChild(dom.modal);
+}
