@@ -66,6 +66,8 @@ state.currentTool = {
 state.map = {};
 state.painting = false;
 state.lastPaintedId = null;
+state.history = { undo: [], redo: [] };
+let dragStartSnap = null;
 
 /**
  * Create blank sheet.
@@ -131,7 +133,6 @@ function initSidebar() {
 
         input.addEventListener('change', () => {
             state.map[layer].classList.toggle('show', input.checked);
-            console.log(dom.inputs.blockLayer.checked);
             document.querySelectorAll('.submenu-tiles')?.forEach(el => el.classList.toggle('show', !dom.inputs.blockLayer.checked));
             updateActiveLayer();
         });
@@ -140,18 +141,27 @@ function initSidebar() {
         dom.sidebar.appendChild(group);
     }
 
-    const button = document.createElement('button');
-    button.id = 'export-map';
-    button.innerText = 'Export';
-    button.addEventListener('click', (e) => exportMap());
-    dom.sidebar.appendChild(button);
+    const btnHandlers = {
+        Export: exportFunction,
+        Undo: undoFunction,
+        Redo: redoFunction,
+    };
 
-  state.map.tileLayer.classList.toggle('show', dom.inputs.tileLayer.checked);
-  state.map.blockLayer.classList.toggle('show', dom.inputs.blockLayer.checked);
-  console.log(document.querySelectorAll('.submenu-tiles'));
-  updateActiveLayer();
+    for (let val of ['Undo','Redo','Export']) {
+        const button = document.createElement('button');
+        button.innerText = val;
+        button.id = `btn-${val.toLowerCase()}`;
+
+        dom[`btn${val}`] = button;
+        dom.sidebar.appendChild(button);
+
+        button.addEventListener('click', btnHandlers[val]);
+    }
+
+    state.map.tileLayer.classList.toggle('show', dom.inputs.tileLayer.checked);
+    state.map.blockLayer.classList.toggle('show', dom.inputs.blockLayer.checked);
+    updateActiveLayer();
 }
-
 
 (() => {
     if (!dom.area) return;
@@ -173,8 +183,6 @@ function initSidebar() {
 
     document.addEventListener('contextmenu', (e) => {
         if (dom.menu.contains(e.target)) return;
-
-        // stoppa browser-menyn
         e.preventDefault();
 
         // stoppa ev. pågående drag
@@ -189,13 +197,10 @@ function initSidebar() {
 })();
 
 function randCName(arr) {
-    console.log(arr);
-    console.log(Array.isArray(arr));
     if (Array.isArray(arr)) {
         const minCeiled = Math.ceil(0);
         const maxFloored = Math.floor(arr.length - 1);
         const result = arr[Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled)];
-        console.log(result);
         return result;
     } else {
         return arr;
@@ -206,20 +211,21 @@ function applyToolToTile(tileEl) {
   if (!tileEl || !tileEl.id) return;
   if (!/_(n\d{1,4})$/.test(tileEl.id)) return; // matchar tileLayer_n123 osv
 
-  // undvik att måla samma tile flera gånger i rad
+  // Undvik att måla samma tile flera gånger i rad.
   if (tileEl.id === state.lastPaintedId) return;
   state.lastPaintedId = tileEl.id;
 
-  // rensa gamla tNN/bNN på elementet
+  // To bort gamla classer på tilen.
   for (const c of [...tileEl.classList]) {
     if (/^[tb]\d{2}$/.test(c)) tileEl.classList.remove(c);
   }
 
-  // välj prefix baserat på aktivt lager
+  // Välj prefix baserat på aktivt lager.
   const prefix = (state.map.active === 'blockLayer') ? 'b' : 't';
   tileEl.classList.add(`${prefix}${randCName(state.currentTool.className)}`);
 }
 
+// Kontrollera vilken tile som är under muspekaren.
 function tileUnderPointer(e) {
   const layer = state.map.active;
   if (!layer) return null;
@@ -229,15 +235,16 @@ function tileUnderPointer(e) {
 }
 
 document.addEventListener('pointerdown', (e) => {
-  // Endast vänsterknapp (hindrar målning vid högerklick)
+  // Om högerklick, stoppa.
   if (e.button !== 0) return;
 
-  // Måla inte om menyn är öppen
+  // Om menyn är öppen, stoppa.
   if (dom.menu?.classList.contains('open')) return;
 
   const tileEl = tileUnderPointer(e);
   if (!tileEl) return;
 
+  dragStartSnap = snapshotMap();
   state.painting = true;
   state.lastPaintedId = null;
   applyToolToTile(tileEl);
@@ -253,8 +260,14 @@ document.addEventListener('pointermove', (e) => {
 });
 
 function stopPaint() {
-  state.painting = false;
-  state.lastPaintedId = null;
+    state.painting = false;
+    state.lastPaintedId = null;
+
+    if (dragStartSnap) {
+        state.history.undo.push(dragStartSnap);
+        state.history.redo.length = 0;
+        dragStartSnap = null;
+    }
 }
 
 document.addEventListener('pointerup', stopPaint);
@@ -296,7 +309,7 @@ function contextMenuContent(tools) {
             dom.menu.querySelectorAll('.active').forEach(x => x.classList.remove('active'));
             el.classList.add('active');
 
-            dom.menu.classList.remove('open'); // <- stäng direkt när man väljer
+            dom.menu.classList.remove('open'); // Stäng menyn när man gör ett val i den.
         });
 
     }
@@ -304,7 +317,7 @@ function contextMenuContent(tools) {
 
 initSidebar();
 
-function exportMap() {
+function exportFunction() {
     dom.modal = document.createElement('div');
     dom.wrapper = document.createElement('div');
     dom.closeBtn = document.createElement('button');
@@ -326,7 +339,6 @@ function exportMap() {
             for (const el of children) {
                 
                 const cls = [...el.classList].find(c => re.test(c));
-                console.log(cls);
                 state.map.export[layer].push(cls);
             }
         }
@@ -343,4 +355,41 @@ function exportMap() {
     }
 
     document.querySelector('body').appendChild(dom.modal);
+}
+
+function undoFunction() {
+  const prev = state.history.undo.pop();
+  if (!prev) return;
+  state.history.redo.push(snapshotMap());
+  restoreMap(prev);
+}
+
+function redoFunction() {
+  const next = state.history.redo.pop();
+  if (!next) return;
+  state.history.undo.push(snapshotMap());
+  restoreMap(next);
+}
+
+
+function snapshotMap() {
+  const snap = {};
+  for (const layer of ['tileLayer', 'blockLayer']) {
+    const re = layer === 'tileLayer' ? /^t\d{2}$/ : /^b\d{2}$/;
+    snap[layer] = [...state.map[layer].children].map(el =>
+      [...el.classList].find(c => re.test(c)) ?? null
+    );
+  }
+  return snap;
+}
+
+function restoreMap(snap) {
+  for (const layer of ['tileLayer', 'blockLayer']) {
+    const re = layer === 'tileLayer' ? /^t\d{2}$/ : /^b\d{2}$/;
+    const kids = state.map[layer].children;
+    for (let i = 0; i < kids.length; i++) {
+      for (const c of [...kids[i].classList]) if (re.test(c)) kids[i].classList.remove(c);
+      if (snap[layer][i]) kids[i].classList.add(snap[layer][i]);
+    }
+  }
 }

@@ -7,6 +7,7 @@ body {
     grid-template-areas: 
         ". header ."
         "sidebar flash .";
+    grid-template-columns: minmax(fit-content, 200px), 1fr, auto;
     gap: var(--spacing);
     flex-direction: column;
     justify-content: center;
@@ -35,15 +36,22 @@ aside {
     padding: var(--spacing);
     color: #fff;
     background-color: rgba(0,0,0,.66);
-
-    & h3 {
-        font-weight: 600;
-        margin-bottom: calc(var(--spacing) * .5);
-    }
+    display: grid;
+    gap: calc(var(--spacing) * 1);
+    justify-items: start;
 
     & > div {
+        width: 100%;
         display: flex;
         gap: calc(var(--spacing) * .5);
+
+        &:nth-child(2) {
+            margin-top: calc(var(--spacing) * -.5);
+        }
+
+        &:hover {
+            opacity: .9;
+        }
     }
 
     & input, & label {
@@ -53,12 +61,46 @@ aside {
     }
 
     & button {
+        cursor: pointer;
+        box-sizing: border-box;
+
+        &:hover {
+            opacity: .9;
+        }
+    }
+
+    & > div, & button#btn-export {
+        grid-column: 1 / span 2;
+        justify-self: stretch;
+    }
+
+    & button#btn-export {
         display: block;
-        margin: var(--spacing) auto 0;
         font-size: 1rem;
         border: none;
         border-radius: 2px;
-        cursor: pointer;
+        line-height: 32px;
+    }
+
+    & button#btn-undo, & button#btn-redo {
+        width: 32px;
+        height: 32px;
+        display: block;
+        overflow: hidden;
+        user-select: none;
+        color: transparent;
+    }
+
+    & button#btn-undo {
+        grid-column: 1 / span 1;
+        justify-self: end;
+        mask: url(img/rotate-left-solid-full.svg) center / calc(var(--spacing) * 1.5) no-repeat;
+    }
+
+    & button#btn-redo {
+        grid-column: 2 / span 1;
+        mask: url(img/rotate-right-solid-full.svg) center / calc(var(--spacing) * 1.5) no-repeat;
+        
     }
 }
 
@@ -206,12 +248,19 @@ div#flash {
     & button {
         position: absolute;
         display: block;
-        top: 0;
-        right: 0;
+        top: calc(var(--spacing) * .25);
+        right: calc(var(--spacing) * .25);
         height: calc(var(--spacing) * 2);
+        width: calc(var(--spacing) * 2);
+        
+        box-sizing: border-box;
+        overflow: hidden;
+        text-indent: calc(var(--spacing) * 2);;
         border: none;
         background: none;
+        
         font-size: 1em;
+        background: url(img/xmark-solid-full.svg) center / contain no-repeat;
 
         &:hover {
             text-decoration: underline;
