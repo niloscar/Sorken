@@ -1,10 +1,10 @@
 /**
  * SORKEN
  */
-window.addEventListener('DOMContentLoaded', function () {
+window.addEventListener('DOMContentLoaded',function () {
   'use strict';
 
-  const score = { cheeseCount: 0, catEncounters: 0, eagleEncounters: 0 };
+  const score = { cheeseCount: 0,catEncounters: 0,eagleEncounters: 0 };
   const body = document.querySelector('body');
 
   // Enemy data
@@ -12,13 +12,13 @@ window.addEventListener('DOMContentLoaded', function () {
     {
       id: 55,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-401729.mp3'), volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-401729.mp3'),volume: 0.8 },
       hp: 1,
     },
     {
       id: 56,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-297927.mp3'), volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-297927.mp3'),volume: 0.8 },
       hp: 1,
     },
     {
@@ -33,7 +33,7 @@ window.addEventListener('DOMContentLoaded', function () {
     {
       id: 58,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-6226.mp3'), volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-6226.mp3'),volume: 0.8 },
       hp: 1,
     },
     {
@@ -48,10 +48,10 @@ window.addEventListener('DOMContentLoaded', function () {
     {
       id: 70,
       type: 'eagle',
-      sound: { file: new Audio('sounds/eagle.mp3'), volume: 0.8 },
+      sound: { file: new Audio('sounds/eagle.mp3'),volume: 0.8 },
       hp: 2,
     },
-    { id: null, type: 'badCheese', sound: { file: null, volume: null }, hp: 1 },
+    { id: null,type: 'badCheese',sound: { file: null,volume: null },hp: 1 },
   ];
   for (let enemy of enemies)
     enemy.sound.file ? (enemy.sound.file.preload = 'auto') : null; // Preload sounds
@@ -61,10 +61,10 @@ window.addEventListener('DOMContentLoaded', function () {
     {
       id: null,
       type: 'eagleSpawn',
-      sound: { file: new Audio('sounds/eagle.mp3'), volume: 0.9 },
+      sound: { file: new Audio('sounds/eagle.mp3'),volume: 0.9 },
       hp: null,
     },
-    { id: 90, type: 'digging', sound: { file: null, volume: null }, hp: null },
+    { id: 90,type: 'digging',sound: { file: null,volume: null },hp: null },
     {
       id: null,
       type: 'timesup',
@@ -81,12 +81,12 @@ window.addEventListener('DOMContentLoaded', function () {
   let rockford = document.getElementById('baddie1'),
     shakeWrap = document.getElementById('shake-wrap'),
     area = document.getElementById('flash'),
-    left = area.offsetLeft, // CSS positioning
+    left = area.offsetLeft,// CSS positioning
     top = area.offsetTop,
-    posLeft = 0, // Steps right/left
-    posTop = 0, // Steps up/down
-    tileSize = smallDevice() ? 14 : 32, // Tile size in height/width
-    gridSize = 24, // Grid size 24x24
+    posLeft = 0,// Steps right/left
+    posTop = 0,// Steps up/down
+    tileSize = smallDevice() ? 14 : 32,// Tile size in height/width
+    gridSize = 24,// Grid size 24x24
     gameStarted = false,
     livesCount = Number(),
     lastItemIndex,
@@ -94,56 +94,56 @@ window.addEventListener('DOMContentLoaded', function () {
      * This is the background for the game area.
      */
     gameArea = [
-      11,24,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,24,11
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,17,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,25,10,
     ],
     gameBlocks = [
-      30,10,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,
-      30,10,10,10,10,30,90,10,10,10,10,10,30,10,10,10,10,10,10,30,91,10,10,30,
-      30,10,30,30,10,30,30,30,30,30,30,10,30,10,10,10,10,10,10,30,30,30,10,30,
-      30,10,30,22,10,10,10,30,55,10,10,10,30,10,10,10,90,10,10,10,10,30,10,30,
-      30,10,30,30,30,30,10,30,10,30,30,30,30,30,10,30,30,30,30,30,10,30,10,30,
-      30,20,10,10,10,10,10,10,10,10,10,10,20,30,10,10,10,10,10,56,10,10,10,30,
-      30,30,30,30,30,30,30,30,30,30,10,30,30,30,30,30,10,30,30,30,30,30,10,30,
-      30,10,10,10,10,10,10,30,10,10,10,10,10,10,10,30,10,10,10,10,10,10,10,30,
-      30,10,10,10,10,10,10,30,10,30,30,30,30,30,10,30,30,30,30,30,30,30,10,30,
-      30,10,10,10,10,10,10,10,10,10,10,30,10,10,10,10,10,10,10,30,10,10,10,30,
-      30,30,30,30,10,30,30,30,30,30,10,30,10,10,10,10,10,10,10,30,10,30,30,30,
-      30,10,10,10,10,10,10,30,10,10,10,30,10,10,22,10,10,10,10,10,10,10,10,30,
-      30,10,30,30,30,30,10,30,10,30,30,30,10,10,58,10,10,10,10,30,30,30,10,30,
-      30,10,90,30,20,10,10,30,10,10,10,30,30,30,30,30,30,30,30,30,10,10,10,30,
-      30,30,30,30,30,30,10,30,30,30,10,10,10,10,10,10,10,10,10,10,10,30,30,30,
-      30,10,10,10,10,10,10,30,10,10,10,30,30,30,30,30,10,30,30,30,30,30,20,30,
-      30,10,30,30,30,30,30,30,10,30,30,30,10,10,92,30,10,10,10,10,10,30,10,30,
-      30,91,10,10,57,10,10,10,10,10,10,10,10,30,30,30,30,30,30,30,10,59,93,30,
-      30,30,30,30,30,30,30,30,30,30,30,30,10,10,10,10,10,10,20,30,10,30,30,30,
-      30,10,10,10,10,10,10,30,10,10,10,30,30,30,30,30,10,30,30,30,10,30,93,30,
-      30,10,10,10,10,10,10,30,10,30,10,10,92,30,20,30,10,10,10,30,10,30,10,30,
-      30,10,22,10,10,10,10,30,10,30,30,30,30,30,10,30,30,30,10,30,10,10,10,30,
-      30,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,30,10,30,10,30,
-      30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,30,10,30
+      19,10,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
+      19,10,10,10,10,19,90,10,10,10,10,10,19,10,10,10,10,10,10,19,90,10,10,19,
+      19,10,19,19,10,19,19,19,19,19,19,10,19,10,10,10,10,10,10,19,19,19,10,19,
+      19,10,19,22,10,10,10,19,55,10,10,10,19,10,10,10,90,10,10,10,10,19,10,19,
+      19,10,19,19,19,19,10,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,10,19,
+      19,20,10,10,10,10,10,10,10,10,10,10,20,19,10,10,10,10,10,56,10,10,10,19,
+      19,19,19,19,19,19,19,19,19,19,10,19,19,19,19,19,10,19,19,19,19,19,10,19,
+      19,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,
+      19,10,10,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,19,19,19,19,10,19,
+      19,10,10,10,10,10,10,10,10,10,10,19,10,10,10,10,10,10,10,19,10,10,10,19,
+      19,19,19,19,10,19,19,19,19,19,10,19,10,10,10,10,10,10,10,19,10,19,19,19,
+      19,10,10,10,10,10,10,19,10,10,10,19,10,10,22,10,10,10,10,10,10,10,10,19,
+      19,10,19,19,19,19,10,19,10,19,19,19,10,10,58,10,10,10,10,19,19,19,10,19,
+      19,10,90,19,20,10,10,19,10,10,10,19,19,19,19,19,19,19,19,19,10,10,10,19,
+      19,19,19,19,19,19,10,19,19,19,10,10,10,10,10,10,10,10,10,10,10,19,19,19,
+      19,10,10,10,10,10,10,19,10,10,10,19,19,19,19,19,10,19,19,19,19,19,20,19,
+      19,10,19,19,19,19,19,19,10,19,19,19,10,10,90,19,10,10,10,10,10,19,10,19,
+      19,90,10,10,57,10,10,10,10,10,10,10,10,19,19,19,19,19,19,19,10,59,90,19,
+      19,19,19,19,19,19,19,19,19,19,19,19,10,10,10,10,10,10,20,19,10,19,19,19,
+      19,10,10,10,10,10,10,19,10,10,10,19,19,19,19,19,10,19,19,19,10,19,90,19,
+      19,10,10,10,10,10,10,19,10,19,10,10,90,19,20,19,10,10,10,19,10,19,10,19,
+      19,10,22,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,10,19,10,10,10,19,
+      19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,10,19,18,19,
+      19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,99,19,
     ];
   initTouchControls();
   initLives();
@@ -153,7 +153,7 @@ window.addEventListener('DOMContentLoaded', function () {
   /**
    * Draw the initial gameplan
    */
-  function drawGamePlan(gameArea, gameBlocks) {
+  function drawGamePlan(gameArea,gameBlocks) {
     let e;
     for (let i = 0; i < gameArea.length; i++) {
       e = document.createElement('div');
@@ -163,16 +163,16 @@ window.addEventListener('DOMContentLoaded', function () {
     }
   }
   console.log('Drawing gameplan.');
-  drawGamePlan(gameArea, gameBlocks);
+  drawGamePlan(gameArea,gameBlocks);
 
   /**
    * Cats
    */
-  const catBlocks = new Set([55, 56, 57, 58, 59]);
+  const catBlocks = new Set([55,56,57,58,59]);
   let gameOver = false;
 
-  // Game over, returnera meddelande och ev ljud.
-  function loseGame(reason, soundId = null) {
+  // Game over,returnera meddelande och ev ljud.
+  function loseGame(reason,soundId = null) {
     gameOver = true;
 
     const enemy = enemies.find(obj => obj.type === reason) ?? null;
@@ -215,11 +215,11 @@ window.addEventListener('DOMContentLoaded', function () {
     el.style.position = 'absolute';
     el.style.top = scrollY + window.innerHeight / 2 + 'px';
     el.style.left = scrollX + window.innerWidth / 2 + 'px';
-    el.style.transform = 'translate(-50%, -50%)';
+    el.style.transform = 'translate(-50%,-50%)';
 
     body.append(el);
 
-    setTimeout(() => el.remove(), 2000);
+    setTimeout(() => el.remove(),2000);
   }
 
   function CountCheeses(blockNr) {
@@ -237,7 +237,7 @@ window.addEventListener('DOMContentLoaded', function () {
   const CheeseToOpenDoor = CountCheeses(20);
   // let collectedCheese = score.cheeseCount;
 
-  function openDoor(target, collected) {
+  function openDoor(target,collected) {
     if (collected >= target) {
       gameBlocks[550] = 10;
     }
@@ -250,7 +250,7 @@ window.addEventListener('DOMContentLoaded', function () {
     let portalId = 0;
 
     // Iterate through gameBlocks to find all portals
-    gameBlocks.forEach((block, index) => {
+    gameBlocks.forEach((block,index) => {
       if (block === isPortal) {
         const x = index % gridSize; // Convert index to x position
         const y = Math.floor(index / gridSize); // Convert index to y position
@@ -280,7 +280,7 @@ window.addEventListener('DOMContentLoaded', function () {
       }
 
       portalObject.targetPortal = target;
-      targetPortals.splice(targetPortals.indexOf(target), 1);
+      targetPortals.splice(targetPortals.indexOf(target),1);
 
       // console.log(`portal ${portalObject.id} targets ${portalObject.targetPortal}`);
     });
@@ -295,13 +295,13 @@ window.addEventListener('DOMContentLoaded', function () {
   /**
    * Move Sorken
    */
-  let move = function (moveLeft, moveTop, which) {
+  let move = function (moveLeft,moveTop,which) {
     function moveIt() {
       rockford.style.left = posLeft * tileSize + 'px';
       rockford.style.top = posTop * tileSize + 'px';
     }
 
-    function portal(BlockNr, singleUse) {
+    function portal(BlockNr,singleUse) {
       let portalIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
 
       let enteredPortal = boundPortals.find(
@@ -323,7 +323,7 @@ window.addEventListener('DOMContentLoaded', function () {
         // Let the portal cave in.
         gameBlocks[portalIndex] = 10;
         gameArea[portalIndex] = 89;
-        drawGamePlan(gameArea, gameBlocks);
+        drawGamePlan(gameArea,gameBlocks);
       }
     }
 
@@ -362,7 +362,7 @@ window.addEventListener('DOMContentLoaded', function () {
       switch (nextBlock) {
         case 20: // Eat cheese
           checkEagleSpawn();
-          openDoor(CheeseToOpenDoor, score.cheeseCount);
+          openDoor(CheeseToOpenDoor,score.cheeseCount);
 
           updateScore(score.cheeseCount++);
           if (score.cheeseCount % 3 === 0) {
@@ -380,10 +380,10 @@ window.addEventListener('DOMContentLoaded', function () {
             () => {
               shakeWrap.classList.remove('eating');
 
-              area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan, except for baddie.
+              area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan,except for baddie.
               gameBlocks[nextIndex] = 10;
               gameArea[nextIndex] = 28;
-              drawGamePlan(gameArea, gameBlocks);
+              drawGamePlan(gameArea,gameBlocks);
               rockford = document.getElementById('baddie1');
               moveIt();
             },
@@ -394,7 +394,7 @@ window.addEventListener('DOMContentLoaded', function () {
         case 22: // Get the Power Rod of Enlightment
           gameBlocks[nextIndex] = 10;
           gameArea[nextIndex] = 28;
-          drawGamePlan(gameArea, gameBlocks);
+          drawGamePlan(gameArea,gameBlocks);
           rockford = document.getElementById('baddie1');
           moveIt();
           area.classList.toggle('lightsout');
@@ -407,8 +407,8 @@ window.addEventListener('DOMContentLoaded', function () {
         case 94:
         case 95:
           shakeWrap.classList.add('digging');
-          shakeWrap.addEventListener('animationend', () => shakeWrap.classList.remove('digging'));
-          portal(nextBlock, true);
+          shakeWrap.addEventListener('animationend',() => shakeWrap.classList.remove('digging'));
+          portal(nextBlock,true);
           break;
 
         case 99:
@@ -417,14 +417,14 @@ window.addEventListener('DOMContentLoaded', function () {
           break;
 
         default:
-          console.log('Block detected, cant move.');
+          console.log('Block detected,cant move.');
       }
     }
   };
   console.log('Moving Sorken to spawn.');
-  move(1, 0, 'down');
+  move(1,0,'down');
 
-  function xyToTile(x, y) {
+  function xyToTile(x,y) {
     return (x + y) * gridSize;
   }
 
@@ -446,7 +446,7 @@ window.addEventListener('DOMContentLoaded', function () {
     const touchControls = body.querySelector('#touch-controls');
     const touchKeys = touchControls?.querySelectorAll('button[id^="touch-"]');
     for (let key of touchKeys)
-      key.addEventListener('touchstart', () => {
+      key.addEventListener('touchstart',() => {
         const keyCode = Number(k[key.id.trim().split('-')[1]]);
         keyDown(keyCode);
       });
@@ -460,23 +460,23 @@ window.addEventListener('DOMContentLoaded', function () {
 
     switch (keyCode) {
       case k.left:
-        move(-1, 0, 'left');
+        move(-1,0,'left');
         break;
 
       case k.right:
-        move(1, 0, 'right');
+        move(1,0,'right');
         break;
 
       case k.up:
-        move(0, -1, 'up');
+        move(0,-1,'up');
         break;
 
       case k.down:
-        move(0, 1, 'down');
+        move(0,1,'down');
         break;
 
       default:
-        move(0, 0, 'down');
+        move(0,0,'down');
         break;
     }
     // console.log(
@@ -486,7 +486,7 @@ window.addEventListener('DOMContentLoaded', function () {
     //     keyCode +
     //     " new pos: " +
     //     rockford.offsetLeft +
-    //     ", " +
+    //     "," +
     //     rockford.offsetTop
     // );
   }
@@ -512,27 +512,27 @@ window.addEventListener('DOMContentLoaded', function () {
     const timer = document.querySelector('#timer > span');
     if (!timer) return;
 
-    let [minutes, seconds] = timer.innerText.trim().split(':');
-    const totSeconds = parseInt(minutes, 10) * 60 + parseInt(seconds, 10);
+    let [minutes,seconds] = timer.innerText.trim().split(':');
+    const totSeconds = parseInt(minutes,10) * 60 + parseInt(seconds,10);
     const end = Date.now() + totSeconds * 1000;
 
     const now = new Date();
 
     const x = setInterval(() => {
-      const msLeft = Math.max(0, end - Date.now());
+      const msLeft = Math.max(0,end - Date.now());
 
       const secsLeft = Math.ceil(msLeft / 1000);
       const minutes = Math.floor(secsLeft / 60);
       const seconds = secsLeft % 60;
 
-      timer.innerHTML = `${minutes}:${String(seconds).padStart(2, '0')}`;
+      timer.innerHTML = `${minutes}:${String(seconds).padStart(2,'0')}`;
 
       if (msLeft === 0) {
         clearInterval(x);
         timer.classList.add('timesup');
         loseGame('timesup');
       }
-    }, 250);
+    },250);
   }
 
   function gameAlert(message) {
@@ -549,14 +549,14 @@ window.addEventListener('DOMContentLoaded', function () {
   // Cats moving around (SMART CATS!)
 
   (function startMovingCats() {
-    const CAT_IDS = [55, 56, 57, 58, 59];
+    const CAT_IDS = [55,56,57,58,59];
     const EMPTY = 10;
     const INTERVAL = 600;
     const HUNT_RANGE = 7;
 
     const playerIndex = () => posLeft + posTop * gridSize;
 
-    const dist = (a, b) => {
+    const dist = (a,b) => {
       const ax = a % gridSize,
         ay = Math.floor(a / gridSize);
       const bx = b % gridSize,
@@ -568,15 +568,15 @@ window.addEventListener('DOMContentLoaded', function () {
       const x = i % gridSize,
         y = Math.floor(i / gridSize);
       return [
-        [x + 1, y],
-        [x - 1, y],
-        [x, y + 1],
-        [x, y - 1],
+        [x + 1,y],
+        [x - 1,y],
+        [x,y + 1],
+        [x,y - 1],
       ]
         .filter(
-          ([nx, ny]) => nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize,
+          ([nx,ny]) => nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize,
         )
-        .map(([nx, ny]) => nx + ny * gridSize)
+        .map(([nx,ny]) => nx + ny * gridSize)
         .filter(n => gameBlocks[n] === EMPTY || n === playerIndex());
     };
 
@@ -584,7 +584,7 @@ window.addEventListener('DOMContentLoaded', function () {
       if (gameOver) return;
 
       const cats = gameBlocks
-        .map((v, i) => (CAT_IDS.includes(v) ? i : -1))
+        .map((v,i) => (CAT_IDS.includes(v) ? i : -1))
         .filter(i => i !== -1);
 
       cats.forEach(catIndex => {
@@ -594,9 +594,9 @@ window.addEventListener('DOMContentLoaded', function () {
 
         let target;
 
-        if (dist(catIndex, pIndex) <= HUNT_RANGE) {
-          target = opts.reduce((best, cur) =>
-            dist(cur, pIndex) < dist(best, pIndex) ? cur : best,
+        if (dist(catIndex,pIndex) <= HUNT_RANGE) {
+          target = opts.reduce((best,cur) =>
+            dist(cur,pIndex) < dist(best,pIndex) ? cur : best,
           );
         } else {
           target = opts[Math.floor(Math.random() * opts.length)];
@@ -610,10 +610,10 @@ window.addEventListener('DOMContentLoaded', function () {
       });
 
       area.querySelectorAll('.tile').forEach(t => t.remove());
-      drawGamePlan(gameArea, gameBlocks);
+      drawGamePlan(gameArea,gameBlocks);
     }
 
-    setInterval(moveCats, INTERVAL);
+    setInterval(moveCats,INTERVAL);
   })();
 
   // Check if player is on touch device
@@ -630,19 +630,19 @@ window.addEventListener('DOMContentLoaded', function () {
   function initTouchControls() {
     if (isTouchDevice()) {
       const touchControls = [
-        { id: 'touch-controls', type: 'div', parent: 'body' },
-        { id: 'touch-left', type: 'button', parent: '#touch-controls' },
-        { id: 'touch-right', type: 'button', parent: '#touch-controls' },
-        { id: 'touch-up', type: 'button', parent: '#touch-controls' },
-        { id: 'touch-down', type: 'button', parent: '#touch-controls' },
+        { id: 'touch-controls',type: 'div',parent: 'body' },
+        { id: 'touch-left',type: 'button',parent: '#touch-controls' },
+        { id: 'touch-right',type: 'button',parent: '#touch-controls' },
+        { id: 'touch-up',type: 'button',parent: '#touch-controls' },
+        { id: 'touch-down',type: 'button',parent: '#touch-controls' },
       ];
 
       for (let obj of touchControls) {
         const parent = document.querySelector(obj.parent),
           el = document.createElement(obj.type);
-        el.addEventListener('pointerdown', () => el.classList.add('active'));
-        ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => {
-          el.addEventListener(ev, () => el.classList.remove('active'));
+        el.addEventListener('pointerdown',() => el.classList.add('active'));
+        ['pointerup','pointercancel','pointerleave'].forEach(ev => {
+          el.addEventListener(ev,() => el.classList.remove('active'));
         });
 
         el.id = obj.id;
@@ -684,7 +684,7 @@ window.addEventListener('DOMContentLoaded', function () {
     // Random Eagle Spawn
 
     const emptyTiles = gameBlocks
-      .map((v, i) => (v === 10 ? i : -1))
+      .map((v,i) => (v === 10 ? i : -1))
       .filter(i => i !== -1);
 
     eagleIndex = emptyTiles[Math.floor(Math.random() * emptyTiles.length)];
@@ -713,8 +713,8 @@ window.addEventListener('DOMContentLoaded', function () {
       let ny = ey + dy;
 
       // Clamp inside grid (but ignores walls)
-      nx = Math.max(0, Math.min(gridSize - 1, nx));
-      ny = Math.max(0, Math.min(gridSize - 1, ny));
+      nx = Math.max(0,Math.min(gridSize - 1,nx));
+      ny = Math.max(0,Math.min(gridSize - 1,ny));
 
       const nextIndex = nx + ny * gridSize;
 
@@ -728,8 +728,8 @@ window.addEventListener('DOMContentLoaded', function () {
       }
 
       area.querySelectorAll('.tile').forEach(t => t.remove());
-      drawGamePlan(gameArea, gameBlocks);
-    }, 400);
+      drawGamePlan(gameArea,gameBlocks);
+    },400);
   }
 
   // Initialize life-bar
@@ -755,7 +755,7 @@ window.addEventListener('DOMContentLoaded', function () {
       livesCount++;
       i++;
       if (i === numLives) clearInterval(intervalId);
-    }, 500);
+    },500);
   }
 
   // Remove lives (hp)
@@ -774,7 +774,7 @@ window.addEventListener('DOMContentLoaded', function () {
       livesCount--;
       i++;
       if (i === numLives) clearInterval(intervalId);
-    }, 500);
+    },500);
   }
 
   // Inflict damage
@@ -799,7 +799,7 @@ window.addEventListener('DOMContentLoaded', function () {
       // shakeWrap.classList.remove('nibbed'); // Ta bort nibbed-classen för säkerhets skull.
       // void shakeWrap.offsetWidth; // Återställ för att kunna köra animation direkt igen.
       shakeWrap.classList.add('nibbed'); // Lägg till nibbeed-classen för att köra animation.
-      shakeWrap.addEventListener('animationend', () => {
+      shakeWrap.addEventListener('animationend',() => {
         shakeWrap.classList.remove('nibbed');
       });
 
@@ -807,7 +807,7 @@ window.addEventListener('DOMContentLoaded', function () {
       removeLives(enemy.hp); // Ta bort hp.
     } else {
       console.log(`Killed by ${enemy.type}.`);
-      loseGame(enemy.type); // Om ingen hälsa kvar, förlora.
+      loseGame(enemy.type); // Om ingen hälsa kvar,förlora.
     }
   }
 
@@ -818,7 +818,7 @@ window.addEventListener('DOMContentLoaded', function () {
   function playSound(sound) {
     sound.file.volume = sound.volume;
     sound.file.currentTime = 0;
-    sound.file.play().catch(err => console.log('Audio blocked:', err));
+    sound.file.play().catch(err => console.log('Audio blocked:',err));
   }
 
   console.log('Everything is ready.');
