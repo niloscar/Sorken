@@ -626,120 +626,47 @@ body {
   height: var(--tileSize);
   float: left;
   background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
 }
-.t10 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_0_old.png);
-}
-.t19 {
-  background: no-repeat center / cover url(img/tiles/wall/metal_wall.png);
-}
-.t12 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_0_old.png);
-}
-.t13 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_1_old.png);
-}
-.t14 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_2_old.png);
-}
-.t15 {
-  background: no-repeat center / cover
-    url(img/tiles/floor/grass_flowers_red_3_old.png);
-}
-.t16 {
-  background: no-repeat center / cover
-    url(img/tiles/floor/grass_flowers_blue_3_old.png);
-}
-.t17 {
-  background: no-repeat center / cover
-    url(img/tiles/floor/grass_flowers_yellow_3_old.png);
-}
-.t18 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_north_old.png);
-}
-/* .t19{background: no-repeat center / cover url(img/tiles/floor/grass_northwest_old.png);} */
-.t20 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_west_old.png);
-}
-.t21 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_full_old.png);
-}
-.t22 {
-  background: no-repeat center / cover
-    url(img/tiles/floor/grass_southwest_old.png);
-}
-.t23 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_south_old.png);
-}
+.t10 { background-image: none;} /* t10 = default ground on maps */
+
+.t11 { background-image: url(img/tiles/floor/grass_0_old.png);}
+.t12 { background-image: url(img/tiles/floor/grass_1_old.png);}
+.t13 { background-image: url(img/tiles/floor/grass_2_old.png);}
+.t14 { background-image: url(img/tiles/floor/grass_flowers_red_3_old.png);}
+.t15 { background-image: url(img/tiles/floor/grass_flowers_blue_3_old.png);}
+.t16 { background-image: url(img/tiles/floor/grass_flowers_yellow_3_old.png);}
+.t17 { background-image: url(img/tiles/floor/grass_north_old.png);}
+
+/* .t19{ background-image: url(img/tiles/floor/grass_northwest_old.png);} */
+.t20{ background-image: url(img/tiles/floor/grass_west_old.png);}
+.t21{ background-image: url(img/tiles/floor/grass_full_old.png);}
+.t22{ background-image: url(img/tiles/floor/grass_southwest_old.png);}
+.t23{ background-image: url(img/tiles/floor/grass_south_old.png);}
 
 /* Start/mål-pilar */
-.t24 {
-  background: no-repeat center / cover url(img/tiles/floor/grass_arrow_down.png);
-} /* Down */
-.t25 {
-  background:
-    no-repeat center / cover url(img/caret-down-solid-full.svg),
-    url(img/tiles/floor/grass_0_old.png);
-} /* Right */
-.t89 {
-  background:
-    no-repeat center / cover url(img/tiles/floor/grass_0_old-hole_filled.png),
-    url(img/tiles/floor/grass_1_old.png);
-}
+ .t24 { background-image: url(img/tiles/floor/grass_arrow_down.png);} /* Down */
+ .t25 { background-image: url(img/tiles/floor/grass_arrow_right.png);} /* Right */
 
-.t99 {
-  background:
-    no-repeat center / cover url(img/tiles/passage/finish2.png),
-    url(img/tiles/floor/grass_1_old.png);
-}
+ /* Block (väggar, dörrar) */
+/* t = väggar som går att gå igenom, b = vanliga väggar */
+.t30, .b30 { background-image: url(img/tiles/wall/brick_brown-vines_1.png);}
+.t31, .b31 { background-image: url(img/tiles/wall/metal_wall.png);}
+.t32, .b32 { background-image: url(img/tiles/wall/crystal_wall02.png);}
+.t33, .b33 { background-image: url(img/tiles/wall/mirrored_wall_old.png);}
+.t34, .b34 { background-image: url(img/tiles/wall/green_crystal_wall.png);background-color:green;}
+.t35, .b35 { background-image: url(img/tiles/passage/open_door.png);background-color:#bbb;}
+.t36, .b36 { background-image: url(img/tiles/passage/closed_door.png);}
+.t99 { background: no-repeat center / cover url(img/tiles/passage/finish2.png), url(img/tiles/floor/grass_1_old.png); }
 
-.b11 {
-  background: no-repeat center / cover url(img/tiles/wall/metal_wall.png);
-}
-.b12 {
-  background: no-repeat center / cover url(img/tiles/wall/crystal_wall02.png);
-}
-.b13 {
-  background: no-repeat center / cover url(img/tiles/wall/mirrored_wall_old.png);
-}
-.b14 {
-  background: no-repeat center / cover
-    url(img/tiles/wall/green_crystal_wall.png);
-  background-color: green;
-}
-.t17 {
-  background:
-    no-repeat center / cover url(img/tiles/passage/open_door.png),
-    url(img/tiles/floor/grass_1_old.png);
-  background-color: #bbb;
-}
-.b18 {
-  background: no-repeat center / cover url(img/tiles/passage/closed_door.png);
-}
-.b19 {
-  background: no-repeat center / cover
-    url(img/tiles/wall/brick_brown-vines_1.png);
-}
+ /* Ost */
+ .b20 { background-image: url(img/tiles/floor/grass_0_old-cheese.png);} /* Hel ost */
+ .b21 { background-image: url(img/tiles/floor/grass_0_old-cheese-halfeaten.png);} /* Halv ost */
+ .t28 { background-image: url(img/tiles/floor/grass_0_old-cheese-eaten.png);} /* Uppäten ost. OBS, notera class! */
 
-/* Ost */
-.b20 {
-  background: no-repeat center / cover
-    url(img/tiles/floor/grass_0_old-cheese.png);
-} /* Hel ost */
-.b21 {
-  background: no-repeat center / cover
-    url(img/tiles/floor/grass_0_old-cheese-halfeaten.png);
-} /* Halv ost */
-.t28 {
-  background: no-repeat center / cover
-    url(img/tiles/floor/grass_0_old-cheese-eaten.png);
-} /* Uppäten ost. OBS, notera class! */
-
-.b22 {
-  background:
-    no-repeat center / cover url(img/tiles/items/rod_3_old.png),
-    url(img/tiles/floor/grass_0_old-cheese-eaten.png);
-}
+ .b22 { background-image: url(img/tiles/items/rod_3_old.png), url(img/tiles/floor/grass_0_old-cheese-eaten.png);}
 
 /* Cats overlay on top of grass */
 .b55,
