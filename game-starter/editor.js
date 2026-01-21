@@ -18,6 +18,10 @@ const cfg = {
             name: 'Open door',
             className: 35,
         },
+        {
+            name: 'Finish',
+            className: 99,
+        },
     ],
     blocks: [
         {
@@ -43,6 +47,14 @@ const cfg = {
         {
             name: 'Closed door',
             className: 36,
+        },
+        {
+            name: 'Portal',
+            className: 90,
+        },
+        {
+            name: 'Cheese',
+            className: 20,
         },
     ],
     items: [],
@@ -349,7 +361,10 @@ function exportFunction() {
 
     for (let i in state.map.export) {
         dom['pre' + i] = document.createElement('pre');
-        dom['pre' + i].innerText = `${i} = [\n${state.map.export[i]
+        // dom['pre' + i].innerText = `${i} = [\n${state.map.export[i]
+        //     .map((v, idx) => (idx > 0 && idx % state.map.meta.width === 0 ? '\n' : '') + v)
+        //     .join(',')}\n];`;
+        dom['pre' + i].innerText = `[\n${state.map.export[i]
             .map((v, idx) => (idx > 0 && idx % state.map.meta.width === 0 ? '\n' : '') + v)
             .join(',')}\n];`;
         dom.wrapper.appendChild(dom['pre' + i]);
