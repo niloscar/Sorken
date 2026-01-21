@@ -142,7 +142,7 @@ div#flash {
 
     & div#tileLayer, & div#blockLayer {
         position: absolute;
-        opacity: 0;
+        opacity: .5;
         pointer-events: none;
         transition: opacity .5s ease;
 
