@@ -687,6 +687,12 @@ body {
     url(img/tiles/floor/grass_1_old.png);
 }
 
+.t99 {
+  background:
+    no-repeat center / cover url(img/tiles/passage/finish2.png),
+    url(img/tiles/floor/grass_1_old.png);
+}
+
 .b11 {
   background: no-repeat center / cover url(img/tiles/wall/metal_wall.png);
 }

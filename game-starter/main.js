@@ -117,7 +117,7 @@ window.addEventListener('DOMContentLoaded',function () {
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
       10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,17,10,
-      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,25,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,99,10,
     ],
     gameBlocks = [
       19,10,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,
@@ -143,7 +143,7 @@ window.addEventListener('DOMContentLoaded',function () {
       19,10,10,10,10,10,10,19,10,19,10,10,90,19,20,19,10,10,10,19,10,19,10,19,
       19,10,22,10,10,10,10,19,10,19,19,19,19,19,10,19,19,19,10,19,10,10,10,19,
       19,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,19,10,19,18,19,
-      19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,99,19,
+      19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,10,19,
     ];
   initTouchControls();
   initLives();
@@ -230,13 +230,13 @@ window.addEventListener('DOMContentLoaded',function () {
         Cheeses++;
       }
     });
-    console.log(Cheeses);
     return Cheeses;
   }
 
-  const CheeseToOpenDoor = CountCheeses(20);
+  const CheeseToOpenDoor = CountCheeses(20); // Default block number for cheese is 20.
   // let collectedCheese = score.cheeseCount;
 
+  /* If all cheeses collected, open door to goal. */
   function openDoor(target,collected) {
     if (collected >= target) {
       gameBlocks[550] = 10;
@@ -341,6 +341,7 @@ window.addEventListener('DOMContentLoaded',function () {
 
     if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
 
+    const nextTile = gameArea[nextIndex];
     const nextBlock = gameBlocks[nextIndex];
 
     // 🐱 KATT = FÖRLUST
@@ -354,11 +355,21 @@ window.addEventListener('DOMContentLoaded',function () {
       posLeft += moveLeft;
       posTop += moveTop;
       moveIt();
+
+      /* Tile triggered events */
+      switch (nextTile) {
+        case 99: // #WINNING
+          gameWon();
+          break;
+      }
+
     } else {
       // If not possible to move:
       // Checks if player has moved since last updateScore.
       if (lastItemIndex === nextIndex) return;
       lastItemIndex = nextIndex;
+
+      /* Block triggered events */
       switch (nextBlock) {
         case 20: // Eat cheese
           checkEagleSpawn();
@@ -409,11 +420,6 @@ window.addEventListener('DOMContentLoaded',function () {
           shakeWrap.classList.add('digging');
           shakeWrap.addEventListener('animationend',() => shakeWrap.classList.remove('digging'));
           portal(nextBlock,true);
-          break;
-
-        case 99:
-          // gameWon();
-          alert('Du vann!');
           break;
 
         default:
@@ -819,6 +825,10 @@ window.addEventListener('DOMContentLoaded',function () {
     sound.file.volume = sound.volume;
     sound.file.currentTime = 0;
     sound.file.play().catch(err => console.log('Audio blocked:',err));
+  }
+
+  function gameWon() {
+    gameAlert(`GRATTIS! 🏆\nDu åt upp alla ostar och tog dig i mål! 🧀`);
   }
 
   console.log('Everything is ready.');
