@@ -337,20 +337,21 @@ function exportFunction() {
             const children = state.map[layer].children;
             const re = (layer === 'tileLayer') ? /^t\d{2}$/ : /^b\d{2}$/;
             for (const el of children) {
-                
-                const cls = [...el.classList].find(c => re.test(c));
-                state.map.export[layer].push(cls);
+                const cls = [...el.classList].find(c => re.test(c)); 
+                const num = cls ? Number(cls.replace(/\D+/g, '')) : null;
+                state.map.export[layer].push(num);
             }
         }
     }
 
     exportLayers(layers);
 
+
     for (let i in state.map.export) {
         dom['pre' + i] = document.createElement('pre');
-        dom['pre' + i].innerText = state.map.export[i]
+        dom['pre' + i].innerText = `${i} = [\n${state.map.export[i]
             .map((v, idx) => (idx > 0 && idx % state.map.meta.width === 0 ? '\n' : '') + v)
-            .join(',');
+            .join(',')}\n];`;
         dom.wrapper.appendChild(dom['pre' + i]);
     }
 

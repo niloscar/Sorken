@@ -108,6 +108,10 @@ div#flash {
     grid-area: flash;
     margin: 0;
     position: relative;
+
+    & * {
+        user-select: none;
+    }
     
     &::before {
         display: block;
