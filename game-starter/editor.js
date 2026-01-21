@@ -18,6 +18,10 @@ const cfg = {
             name: 'Open door',
             className: 35,
         },
+        {
+            name: 'Finish',
+            className: 99,
+        },
     ],
     blocks: [
         {
@@ -43,6 +47,14 @@ const cfg = {
         {
             name: 'Closed door',
             className: 36,
+        },
+        {
+            name: 'Portal',
+            className: 90,
+        },
+        {
+            name: 'Cheese',
+            className: 20,
         },
     ],
     items: [],
