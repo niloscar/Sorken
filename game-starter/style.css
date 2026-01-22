@@ -290,7 +290,7 @@ tfoot {
  * 
  */
 body {
-  background: no-repeat center / cover url(img/bg2.webp);
+  background: no-repeat center / cover url(img/bg2.webp) #050505;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -304,12 +304,21 @@ body {
   box-sizing: border-box;
 }
 
+html, body * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 @media screen and (max-width: 960px) {
   body {
     align-items: flex-start;
     padding: 10vw 0 20vw 0;
     max-width: 100vw;
-    max-height: 100svh;
+    max-height: none;
+    min-height: none;
+    height: 100vh;
+    height: 100lvh;
     overflow: hidden;
     touch-action: none;
   }
@@ -426,6 +435,7 @@ body {
   top: 50%;
   isolation: isolate;
   text-align: center;
+  z-index: 99;
 }
 #game-alert::after {
   content: "Tryck på mellanslag (space) för att spela igen.";
@@ -436,6 +446,12 @@ body {
   font-size: 0.5em;
   text-align: center;
   top: calc(100% + 1rem);
+}
+
+@media screen and (max-width: 960px) {
+  #game-alert::after {
+    content: "Tryck på displayen för att spela igen.";
+  }
 }
 
 #game-alert::before {
@@ -450,7 +466,7 @@ body {
   pointer-events: none;
 }
 
-.gameover #game-alert::before {
+.game-over #game-alert::before {
   display: block;
 }
 
@@ -461,7 +477,7 @@ body {
     "left . right"
     ". down .";
 
-  z-index: 999;
+  z-index: 98;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -553,55 +569,63 @@ body {
 
 .baddie {
   position: absolute;
-}
-.baddie {
-  background-size: auto var(--tileSize);
-  z-index: 10;
-  width: var(--tileSize);
-  height: var(--tileSize);
-  background-image: url(img/sprite_mickey_mos_mini.png);
-  background-repeat: no-repeat;
   -webkit-transition-property: left, top;
   -moz-transition-property: left, top;
   -ms-transition-property: left, top;
   -o-transition-property: left, top;
   transition-property: left, top;
-  -webkit-transition-duration: 0.2s;
-  -moz-transition-duration: 0.2s;
-  -ms-transition-duration: 0.2s;
-  -o-transition-duration: 0.2s;
-  transition-duration: 0.2s;
+  -webkit-transition-duration: 225ms;
+  -moz-transition-duration: 225ms;
+  -ms-transition-duration: 225ms;
+  -o-transition-duration: 225ms;
+  transition-duration: 225ms;
   -webkit-transition-timing-function: ease;
   -moz-transition-timing-function: ease;
   -ms-transition-timing-function: ease;
   -o-transition-timing-function: ease;
   transition-timing-function: ease;
+  z-index: 10;
+  width: var(--tileSize);
+  height: var(--tileSize);
 }
-.baddie::after {
+.baddie i {
+  position: absolute;
+
+  z-index: 10;
+  inset: 0;
+  background: url(img/sprite_mickey_mos_mini.png) center / auto var(--tileSize) no-repeat;
+}
+.baddie::after i {
   display: none;
 }
 
-.game-won .baddie {
-  position: absolute;
+.game-won .baddie i {
   overflow: visible;
-  z-index: 999 !important;
 }
 
-.game-won .baddie::b {
-  content: "asdasd";
+.baddie::before {
+  content: '';
   display: block;
   position: absolute;
   left: 50%;
   top: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 2s ease;
+  transition-delay: 300ms;
+  opacity: 0;
 
   width: calc(var(--tileSize) * 24 * 2);
   height: calc(var(--tileSize) * 24 * 2);
-  background: radial-gradient(
-    rgba(255, 255, 255, 0.85) 5%,
-    rgba(255, 255, 220, 0.85) 50%
+    background: radial-gradient(
+    rgba(255, 255, 255, .95) 0%,
+    rgba(255, 255, 220, .7) 75%
   );
   z-index: -1;
   pointer-events: none;
+}
+
+.game-won .baddie::before {
+  opacity: 1;
 }
 
 .digging .baddie {
@@ -626,16 +650,21 @@ body {
   position: absolute;
   transition: opacity 5s ease;
 }
-.baddie.up {
+
+.game-won .lightsout .baddie::after {
+  display: none;
+}
+
+.baddie.up i {
   background-position: calc(var(--tileSize) * -3) 0;
 }
-.baddie.down {
+.baddie.down i {
   background-position: calc(var(--tileSize) * -2) 0;
 }
-.baddie.left {
+.baddie.left i {
   background-position: calc(var(--tileSize) * -1) 0;
 }
-.baddie.right {
+.baddie.right i {
   background-position: 0 0;
 }
 /** --------------------------------------------------------------
@@ -963,8 +992,13 @@ body {
   }
 }
 
+<<<<<<< HEAD
 .tile.b70 {
   background-image: url("sorken.img/felids/caustic_shrike.png"); /* Testing */
+=======
+.b70 {
+  background-image: url(img/caustic_shrike.png), url(img/tiles/floor/grass_0_old.png);
+>>>>>>> c15cc2589819252a3c617ad0e434dd00f733a468
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

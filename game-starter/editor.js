@@ -58,6 +58,28 @@ const cfg = {
         },
     ],
     items: [],
+    enemies: [
+        {
+            name: 'Misse',
+            className: 55,
+        },
+        {
+            name: 'Simba',
+            className: 56,
+        },
+        {
+            name: 'Findus',
+            className: 57,
+        },
+        {
+            name: 'Pelle',
+            className: 58,
+        },
+        {
+            name: 'Felix',
+            className: 59,
+        },
+    ],
 };
 
 /**
@@ -145,8 +167,8 @@ function initSidebar() {
 
         input.addEventListener('change', () => {
             state.map[layer].classList.toggle('show', input.checked);
-            document.querySelectorAll('.submenu-tiles')?.forEach(el => el.classList.toggle('show', !dom.inputs.blockLayer.checked));
             updateActiveLayer();
+            updateContextMenuVisibility();
         });
 
         group.append(input, label);
@@ -186,6 +208,8 @@ function initSidebar() {
     contextMenuContent('tools');
     contextMenuContent('tiles');
     contextMenuContent('blocks');
+    contextMenuContent('enemies');
+    updateContextMenuVisibility();
 
     document.addEventListener('click', (e) => {
     if (dom.menu.classList.contains('open') && !dom.menu.contains(e.target)) {
@@ -298,8 +322,6 @@ function contextMenuContent(tools) {
     dom.menu.appendChild(submenu);
 
     heading.className = submenu.className = 'submenu-' + tools;
-    const show = (tools === 'blocks') || (state.map.active === 'tileLayer');
-    [heading, submenu].forEach(el => el.classList.toggle('show', show));
 
     for (let tool of cfg[tools]) {
 
@@ -317,13 +339,26 @@ function contextMenuContent(tools) {
                 name: tool.name,
                 className: tool.className
             };
-
             dom.menu.querySelectorAll('.active').forEach(x => x.classList.remove('active'));
             el.classList.add('active');
 
             dom.menu.classList.remove('open'); // Stäng menyn när man gör ett val i den.
         });
 
+    }
+}
+
+function updateContextMenuVisibility() {
+    for (const tools of ['tools', 'tiles', 'blocks', 'enemies']) {
+        const show = (state.map.active === 'blockLayer')
+            ? true
+            : (state.map.active === 'tileLayer')
+                ? tools !== 'enemies'
+                : false;
+
+        document
+        .querySelectorAll('.submenu-' + tools)
+        .forEach(el => el.classList.toggle('show', show));
     }
 }
 
