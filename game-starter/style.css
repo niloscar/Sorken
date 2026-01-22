@@ -976,8 +976,8 @@ body {
   }
 }
 
-.tile.b70 {
-  background-image: url(img/caustic_shrike.png);
+.b70 {
+  background-image: url(img/caustic_shrike.png), url(img/tiles/floor/grass_0_old.png);
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
