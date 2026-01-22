@@ -124,7 +124,7 @@ window.addEventListener('DOMContentLoaded',function () {
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,35,11,
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,99,11
     ],
     gameBlocks = [
@@ -243,11 +243,11 @@ window.addEventListener('DOMContentLoaded',function () {
   }
 
   const CheeseToOpenDoor = CountCheeses(20); // Default block number for cheese is 20.
-  // let collectedCheese = score.cheeseCount;
 
   /* If all cheeses collected, open door to goal. */
   function openDoor(target,collected) {
     if (collected >= target) {
+      console.log('open!');
       gameBlocks[550] = 10;
     }
   }
@@ -382,8 +382,6 @@ window.addEventListener('DOMContentLoaded',function () {
       /* Block triggered events */
       switch (nextBlock) {
         case 20: // Eat cheese
-          checkEagleSpawn();
-          openDoor(CheeseToOpenDoor,score.cheeseCount);
           console.log(gameEvent.sound);
           playSound(gameEvent.sound);
           updateScore(score.cheeseCount++);
@@ -395,6 +393,9 @@ window.addEventListener('DOMContentLoaded',function () {
                 : `Ate 3 more cheeses (+1 HP).`,
             );
           }
+          openDoor(CheeseToOpenDoor,score.cheeseCount);
+          checkEagleSpawn();
+          console.log(CheeseToOpenDoor,score.cheeseCount);
 
           shakeWrap.classList.add('eating');
           shakeWrap.addEventListener(
