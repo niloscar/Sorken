@@ -290,7 +290,7 @@ tfoot {
  * 
  */
 body {
-  background: no-repeat center / cover url(img/bg2.webp);
+  background: no-repeat center / cover url(img/bg2.webp) #050505;
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -304,12 +304,21 @@ body {
   box-sizing: border-box;
 }
 
+html, body * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 @media screen and (max-width: 960px) {
   body {
     align-items: flex-start;
     padding: 10vw 0 20vw 0;
     max-width: 100vw;
-    max-height: 100svh;
+    max-height: none;
+    min-height: none;
+    height: 100vh;
+    height: 100lvh;
     overflow: hidden;
     touch-action: none;
   }
@@ -426,6 +435,7 @@ body {
   top: 50%;
   isolation: isolate;
   text-align: center;
+  z-index: 99;
 }
 #game-alert::after {
   content: "Tryck på mellanslag (space) för att spela igen.";
@@ -436,6 +446,12 @@ body {
   font-size: 0.5em;
   text-align: center;
   top: calc(100% + 1rem);
+}
+
+@media screen and (max-width: 960px) {
+  #game-alert::after {
+    content: "Tryck på displayen för att spela igen.";
+  }
 }
 
 #game-alert::before {
@@ -461,7 +477,7 @@ body {
     "left . right"
     ". down .";
 
-  z-index: 999;
+  z-index: 98;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -558,11 +574,11 @@ body {
   -ms-transition-property: left, top;
   -o-transition-property: left, top;
   transition-property: left, top;
-  -webkit-transition-duration: 0.2s;
-  -moz-transition-duration: 0.2s;
-  -ms-transition-duration: 0.2s;
-  -o-transition-duration: 0.2s;
-  transition-duration: 0.2s;
+  -webkit-transition-duration: 225ms;
+  -moz-transition-duration: 225ms;
+  -ms-transition-duration: 225ms;
+  -o-transition-duration: 225ms;
+  transition-duration: 225ms;
   -webkit-transition-timing-function: ease;
   -moz-transition-timing-function: ease;
   -ms-transition-timing-function: ease;

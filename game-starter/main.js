@@ -262,7 +262,7 @@ window.addEventListener('DOMContentLoaded',function () {
   /* If all cheeses collected, open door to goal. */
   function openDoor(target,collected) {
     if (collected >= target) {
-      console.log('open!');
+      console.log('Door open!');
       gameBlocks[550] = 10;
     }
   }
@@ -298,7 +298,6 @@ window.addEventListener('DOMContentLoaded',function () {
         targetPortals[Math.floor(Math.random() * targetPortals.length)];
 
       while (portalObject.id === target && targetPortals.length > 1) {
-        // console.log('clash!');
         target =
           targetPortals[Math.floor(Math.random() * targetPortals.length)];
       }
@@ -306,10 +305,7 @@ window.addEventListener('DOMContentLoaded',function () {
       portalObject.targetPortal = target;
       targetPortals.splice(targetPortals.indexOf(target),1);
 
-      // console.log(`portal ${portalObject.id} targets ${portalObject.targetPortal}`);
     });
-
-    // console.log(portals);
 
     return portals;
   }
@@ -368,8 +364,6 @@ window.addEventListener('DOMContentLoaded',function () {
     state.nextBlock = gameBlocks[nextIndex];
 
     const gameEvent = gameEvents.find(obj => obj.id === state.nextBlock || obj.id === state.nextTile) ?? null;
-    console.log(gameEvents);
-    console.log(gameEvent);
 
     // 🐱 KATT = FÖRLUST
     if (catBlocks.has(state.nextBlock)) {
@@ -403,7 +397,6 @@ window.addEventListener('DOMContentLoaded',function () {
       /* Block triggered events */
       switch (state.nextBlock) {
         case 20: // Eat cheese
-          console.log(gameEvent.sound);
           playSound(gameEvent.sound);
           updateScore(score.cheeseCount++);
           if (score.cheeseCount % 3 === 0) {
@@ -416,7 +409,6 @@ window.addEventListener('DOMContentLoaded',function () {
           }
           openDoor(CheeseToOpenDoor,score.cheeseCount);
           checkEagleSpawn();
-          console.log(CheeseToOpenDoor,score.cheeseCount);
 
           shakeWrap.classList.add('eating');
           shakeWrap.addEventListener(
@@ -482,16 +474,29 @@ window.addEventListener('DOMContentLoaded',function () {
     down: 40,
   };
 
-  document.onkeydown = event => keyDown(event.keyCode || event.which);
+  state.moveHold = {
+    id: null,
+    keyCode: null,
+    repeatMs: 150,   // Time in ms until next "keypress" if player is holding down key.
+  };
 
   if (isTouchDevice()) {
     const touchControls = body.querySelector('#touch-controls');
     const touchKeys = touchControls?.querySelectorAll('button[id^="touch-"]');
-    for (let key of touchKeys)
-      key.addEventListener('touchstart',() => {
-        const keyCode = Number(k[key.id.trim().split('-')[1]]);
-        keyDown(keyCode);
+
+    for (const btn of touchKeys) {
+      const dir = btn.id.trim().split('-')[1];  // left/right/up/down
+      const code = Number(k[dir]);
+
+      btn.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        startHoldMove(code);
       });
+
+      ['pointerup', 'pointercancel', 'pointerleave', 'pointerout'].forEach(ev =>
+        btn.addEventListener(ev, stopHoldMove)
+      );
+    }
   }
 
   function keyDown(keyCode) {
@@ -532,6 +537,41 @@ window.addEventListener('DOMContentLoaded',function () {
     //     rockford.offsetTop
     // );
   }
+
+  function startHoldMove(keyCode) {
+    if (state.moveHold.id && state.moveHold.keyCode === keyCode) return; // Don't start if already pushed.
+    stopHoldMove(); // Stop ongoing move.
+
+    state.moveHold.keyCode = keyCode;
+    keyDown(keyCode); // First step.
+
+    state.moveHold.id = setInterval(() => {
+      keyDown(keyCode);
+    }, state.moveHold.repeatMs);
+  }
+
+  function stopHoldMove() {
+    if (state.moveHold.id) clearInterval(state.moveHold.id);
+    state.moveHold.id = null;
+    state.moveHold.keyCode = null;
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.repeat) return;
+
+    const code = e.keyCode || e.which;
+
+    if ([k.left, k.right, k.up, k.down].includes(code)) {
+      startHoldMove(code);
+    } else {
+      keyDown(code);
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    const code = e.keyCode || e.which;
+    if (code === state.moveHold.keyCode) stopHoldMove();
+  });
 
   function updateScore(val) {
     const scoreBoard = document.getElementById('scoreboard');
@@ -580,11 +620,9 @@ window.addEventListener('DOMContentLoaded',function () {
     const el = document.createElement('div');
     el.id = 'game-alert';
     el.innerText = message;
+    state.gameAlert = el;
     body.append(el);
-
-    document.onkeydown = event => {
-      if ((event.keyCode || event.which) === 32) location.reload();
-    };
+    pressToRestart()
   }
 
   // Cats moving around (SMART CATS!)
@@ -684,8 +722,8 @@ window.addEventListener('DOMContentLoaded',function () {
       for (let obj of touchControls) {
         const parent = document.querySelector(obj.parent),
           el = document.createElement(obj.type);
-        el.addEventListener('pointerdown',() => el.classList.add('active'));
-        ['pointerup','pointercancel','pointerleave'].forEach(ev => {
+          el.addEventListener('pointerdown',() => el.classList.add('active'));
+          ['pointerup','pointercancel','pointerleave'].forEach(ev => {
           el.addEventListener(ev,() => el.classList.remove('active'));
         });
 
@@ -885,7 +923,13 @@ window.addEventListener('DOMContentLoaded',function () {
       arr = null;
     }
   }
-});
 
+  function pressToRestart(){
+    document.onkeydown = event => { 
+      if ((event.keyCode || event.which) === 32) location.reload(); 
+    }
+    document.querySelector('body').addEventListener('touchstart', () => location.reload());
+  }
+});
 
 
