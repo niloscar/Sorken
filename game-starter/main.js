@@ -197,6 +197,7 @@ window.addEventListener('DOMContentLoaded',function () {
   // Game over,returnera meddelande och ev ljud.
   function loseGame(reason,soundId = null) {
     gameOver = true;
+    clearAllIntervals([state.timer, state.moveCats]);
 
     const enemy = enemies.find(obj => obj.type === reason) ?? null;
     const gameEvent = gameEvents.find(obj => obj.type === reason) ?? null;
@@ -221,7 +222,7 @@ window.addEventListener('DOMContentLoaded',function () {
         break;
     }
 
-    body.classList.add('gameover');
+    body.classList.add('game-over');
     shakeWrap.classList.add('eaten');
     gameAlert(returnString ?? reason);
   }
@@ -375,6 +376,10 @@ window.addEventListener('DOMContentLoaded',function () {
       damage(state.nextBlock);
       return;
     }
+
+    /**
+     * Moving (and events triggered by player move).
+     */
 
     // First if means the baddie can movie
     if (!(state.nextBlock - 10)) {
@@ -565,9 +570,8 @@ window.addEventListener('DOMContentLoaded',function () {
       dom.timer.innerHTML = `${minutes}:${String(seconds).padStart(2,'0')}`;
 
       if (msLeft === 0) {
-        clearInterval(x);
         dom.timer.classList.add('timesup');
-        loseGame('timesup');
+        loseGame('timesup'); // loseGame clears the interval.
       }
     },250);
   }
@@ -594,25 +598,20 @@ window.addEventListener('DOMContentLoaded',function () {
     const playerIndex = () => posLeft + posTop * gridSize;
 
     const dist = (a,b) => {
-      const ax = a % gridSize,
-        ay = Math.floor(a / gridSize);
-      const bx = b % gridSize,
-        by = Math.floor(b / gridSize);
+      const ax = a % gridSize, ay = Math.floor(a / gridSize);
+      const bx = b % gridSize, by = Math.floor(b / gridSize);
       return Math.abs(ax - bx) + Math.abs(ay - by);
     };
 
     const neighbors = i => {
-      const x = i % gridSize,
-        y = Math.floor(i / gridSize);
+      const x = i % gridSize, y = Math.floor(i / gridSize);
       return [
         [x + 1,y],
         [x - 1,y],
         [x,y + 1],
         [x,y - 1],
       ]
-        .filter(
-          ([nx,ny]) => nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize,
-        )
+        .filter(([nx,ny]) => nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize,)
         .map(([nx,ny]) => nx + ny * gridSize)
         .filter(n => gameBlocks[n] === EMPTY || n === playerIndex());
     };
@@ -650,8 +649,16 @@ window.addEventListener('DOMContentLoaded',function () {
       drawGamePlan(gameArea,gameBlocks);
     }
 
-    state.moveCats = setInterval(moveCats,INTERVAL);
+    state.moveCatsFn = moveCats;
+    state.moveCatsInterval = INTERVAL;
+
+    startMoveCats(moveCats, INTERVAL);
   })();
+
+  function startMoveCats(fn = state.moveCatsFn, interval = state.moveCatsInterval) {
+    if (state.moveCats) clearInterval(state.moveCats);
+    state.moveCats = setInterval(fn, interval);
+  }
 
   // Check if player is on touch device
   function isTouchDevice() {
@@ -706,7 +713,7 @@ window.addEventListener('DOMContentLoaded',function () {
 
   const EAGLE_ID = 70;
   let eagleIndex = null;
-  let eagleInterval = null;
+  state.eagleInterval = null;
 
   function countRemainingCheese() {
     return gameBlocks.filter(b => b === 20).length;
@@ -734,7 +741,7 @@ window.addEventListener('DOMContentLoaded',function () {
   }
 
   function startEagle() {
-    eagleInterval = setInterval(() => {
+    state.eagleInterval = setInterval(() => {
       if (gameOver) return;
 
       const px = posLeft;
@@ -859,17 +866,25 @@ window.addEventListener('DOMContentLoaded',function () {
   }
 
   function gameWon() {
-    // console.log('state.nextTile',state.nextTile);
-    // console.log(gameEvents.type === 'gameWon');
     const gameEvent = gameEvents.find(obj => obj.type === 'gameWon') ?? null;
     playSound(gameEvent.sound);
-    shakeWrap.classList.add('game-won');
-    clearInterval(state.timer);
-    clearInterval(state.moveCats);
+    body.classList.add('game-won');
+    clearAllIntervals([state.timer, state.moveCats, state.eagleInterval]);
+
     gameAlert(`GRATTIS! 🏆\nDu åt upp alla ostar och tog dig i mål! 🧀`);
   }
 
-  console.log('Everything is ready.');
+  function clearAllIntervals(arr) {
+    if (Array.isArray(arr)) {
+      for (let intv of arr) {
+        clearInterval(intv);
+        intv = null;
+      };
+    } else {
+      clearInterval(arr);
+      arr = null;
+    }
+  }
 });
 
 
