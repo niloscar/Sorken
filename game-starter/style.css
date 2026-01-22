@@ -428,7 +428,7 @@ body {
   text-align: center;
 }
 #game-alert::after {
-  content: 'Tryck på mellanslag (space) för att spela igen.';
+  content: "Tryck på mellanslag (space) för att spela igen.";
   position: absolute;
   display: block;
   color: #fff;
@@ -588,7 +588,7 @@ body {
 }
 
 .game-won .baddie::b {
-  content: 'asdasd';
+  content: "asdasd";
   display: block;
   position: absolute;
   left: 50%;
@@ -901,10 +901,18 @@ body {
 }
 
 @keyframes baddie-digging {
-  0% { opacity: 1; }
-  10% { opacity: .5; }
-  80% { opacity: .5; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 0.5;
+  }
+  80% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes digging {
@@ -956,7 +964,8 @@ body {
 }
 
 .tile.b70 {
-  background-image: url('boulder-dash-tiles/monster/animals/caustic_shrike.png');
+  background: url("sorken.img/felids/caustic_shrike.png"); /* Testing */
+  background-image: url("boulder-dash-tiles/monster/animals/caustic_shrike.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
