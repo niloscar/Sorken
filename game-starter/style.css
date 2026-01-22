@@ -992,13 +992,8 @@ html, body * {
   }
 }
 
-<<<<<<< HEAD
-.tile.b70 {
-  background-image: url("sorken.img/felids/caustic_shrike.png"); /* Testing */
-=======
 .b70 {
   background-image: url(img/caustic_shrike.png), url(img/tiles/floor/grass_0_old.png);
->>>>>>> c15cc2589819252a3c617ad0e434dd00f733a468
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
