@@ -428,7 +428,7 @@ body {
   text-align: center;
 }
 #game-alert::after {
-  content: 'Tryck på mellanslag (space) för att försöka igen.';
+  content: 'Tryck på mellanslag (space) för att spela igen.';
   position: absolute;
   display: block;
   color: #fff;

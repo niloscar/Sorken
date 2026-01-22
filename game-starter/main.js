@@ -82,6 +82,12 @@ window.addEventListener('DOMContentLoaded',function () {
       sound: { file: new Audio('sounds/cheese-eating.mp3'), volume: 1 },
       hp: null,
     },
+    {
+      id: 22,
+      type: 'powerRod',
+      sound: { file: new Audio('sounds/light-switch.mp3'), volume: 0.7 },
+      hp: null,
+    },
   ];
   for (let gameEvent of gameEvents)
     gameEvent.sound.file ? (gameEvent.sound.file.preload = 'auto') : null; // Preload sounds
@@ -242,7 +248,7 @@ window.addEventListener('DOMContentLoaded',function () {
     return Cheeses;
   }
 
-  const CheeseToOpenDoor = CountCheeses(20); // Default block number for cheese is 20.
+  const CheeseToOpenDoor = 1//CountCheeses(20); // Default block number for cheese is 20.
 
   /* If all cheeses collected, open door to goal. */
   function openDoor(target,collected) {
@@ -417,7 +423,7 @@ window.addEventListener('DOMContentLoaded',function () {
         case 22: // Get the Power Rod of Enlightment
           gameBlocks[nextIndex] = 10;
           gameArea[nextIndex] = 28;
-          // playSound(gameEvents.sound);
+          playSound(gameEvent.sound);
           drawGamePlan(gameArea,gameBlocks);
           rockford = document.getElementById('baddie1');
           moveIt();
