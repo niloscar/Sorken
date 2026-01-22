@@ -888,6 +888,7 @@ window.addEventListener('DOMContentLoaded',function () {
       playSound(enemy.sound);
       removeLives(enemy.hp); // Ta bort hp.
     } else {
+      removeLives(enemy.hp);
       console.log(`Killed by ${enemy.type}.`);
       loseGame(enemy.type); // Om ingen hälsa kvar,förlora.
     }
