@@ -964,8 +964,7 @@ body {
 }
 
 .tile.b70 {
-  background: url("sorken.img/felids/caustic_shrike.png"); /* Testing */
-  background-image: url("boulder-dash-tiles/monster/animals/caustic_shrike.png");
+  background-image: url("sorken.img/felids/caustic_shrike.png"); /* Testing */
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
