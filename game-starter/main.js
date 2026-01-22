@@ -197,6 +197,7 @@ window.addEventListener('DOMContentLoaded',function () {
   // Game over,returnera meddelande och ev ljud.
   function loseGame(reason,soundId = null) {
     gameOver = true;
+    clearAllIntervals(state.timer, state.moveCats);
 
     const enemy = enemies.find(obj => obj.type === reason) ?? null;
     const gameEvent = gameEvents.find(obj => obj.type === reason) ?? null;
@@ -565,9 +566,8 @@ window.addEventListener('DOMContentLoaded',function () {
       dom.timer.innerHTML = `${minutes}:${String(seconds).padStart(2,'0')}`;
 
       if (msLeft === 0) {
-        clearInterval(x);
         dom.timer.classList.add('timesup');
-        loseGame('timesup');
+        loseGame('timesup'); // loseGame clears the interval.
       }
     },250);
   }
@@ -859,17 +859,21 @@ window.addEventListener('DOMContentLoaded',function () {
   }
 
   function gameWon() {
-    // console.log('state.nextTile',state.nextTile);
-    // console.log(gameEvents.type === 'gameWon');
     const gameEvent = gameEvents.find(obj => obj.type === 'gameWon') ?? null;
     playSound(gameEvent.sound);
     shakeWrap.classList.add('game-won');
-    clearInterval(state.timer);
-    clearInterval(state.moveCats);
+    clearAllIntervals(state.timer, state.moveCats);
+
     gameAlert(`GRATTIS! 🏆\nDu åt upp alla ostar och tog dig i mål! 🧀`);
   }
 
-  console.log('Everything is ready.');
+  function clearAllIntervals(arr) {
+    if (Array.isArray(arr)) {
+      for (let intv of arr) clearInterval(intv);
+    } else {
+      clearInterval(arr);
+    }
+  }
 });
 
 
