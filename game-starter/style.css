@@ -428,7 +428,7 @@ body {
   text-align: center;
 }
 #game-alert::after {
-  content: 'Tryck på mellanslag (space) för att försöka igen.';
+  content: 'Tryck på mellanslag (space) för att spela igen.';
   position: absolute;
   display: block;
   color: #fff;
@@ -580,6 +580,30 @@ body {
 .baddie::after {
   display: none;
 }
+
+.game-won .baddie {
+  position: absolute;
+  overflow: visible;
+  z-index: 999 !important;
+}
+
+.game-won .baddie::b {
+  content: 'asdasd';
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: calc(var(--tileSize) * 24 * 2);
+  height: calc(var(--tileSize) * 24 * 2);
+  background: radial-gradient(
+    rgba(255, 255, 255, 0.85) 5%,
+    rgba(255, 255, 220, 0.85) 50%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
 .digging .baddie {
   transition-delay: 200ms;
   transition-duration: 500ms;

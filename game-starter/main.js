@@ -6,6 +6,8 @@ window.addEventListener('DOMContentLoaded',function () {
 
   const score = { cheeseCount: 0,catEncounters: 0,eagleEncounters: 0 };
   const body = document.querySelector('body');
+  const state = {};
+  const dom = {};
 
   // Enemy data
   const enemies = [
@@ -80,6 +82,18 @@ window.addEventListener('DOMContentLoaded',function () {
       id: 20,
       type: 'cheese',
       sound: { file: new Audio('sounds/cheese-eating.mp3'), volume: 1 },
+      hp: null,
+    },
+    {
+      id: 22,
+      type: 'powerRod',
+      sound: { file: new Audio('sounds/light-switch.mp3'), volume: 0.7 },
+      hp: null,
+    },
+    {
+      id: 99,
+      type: 'gameWon',
+      sound: { file: new Audio('sounds/game-won.mp3'), volume: 0.7 },
       hp: null,
     },
   ];
@@ -347,26 +361,29 @@ window.addEventListener('DOMContentLoaded',function () {
     if (gameOver) return;
 
     const nextIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
-
     if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
 
-    const nextTile = gameArea[nextIndex];
-    const nextBlock = gameBlocks[nextIndex];
+    state.nextTile = gameArea[nextIndex];
+    state.nextBlock = gameBlocks[nextIndex];
+
+    const gameEvent = gameEvents.find(obj => obj.id === state.nextBlock || obj.id === state.nextTile) ?? null;
+    console.log(gameEvents);
+    console.log(gameEvent);
 
     // 🐱 KATT = FÖRLUST
-    if (catBlocks.has(nextBlock)) {
-      damage(nextBlock);
+    if (catBlocks.has(state.nextBlock)) {
+      damage(state.nextBlock);
       return;
     }
 
     // First if means the baddie can movie
-    if (!(nextBlock - 10)) {
+    if (!(state.nextBlock - 10)) {
       posLeft += moveLeft;
       posTop += moveTop;
       moveIt();
 
       /* Tile triggered events */
-      switch (nextTile) {
+      switch (state.nextTile) {
         case 99: // #WINNING
           gameWon();
           break;
@@ -377,10 +394,9 @@ window.addEventListener('DOMContentLoaded',function () {
       // Checks if player has moved since last updateScore.
       if (lastItemIndex === nextIndex) return;
       lastItemIndex = nextIndex;
-      const gameEvent = gameEvents.find(obj => obj.id === nextBlock) ?? null;
 
       /* Block triggered events */
-      switch (nextBlock) {
+      switch (state.nextBlock) {
         case 20: // Eat cheese
           console.log(gameEvent.sound);
           playSound(gameEvent.sound);
@@ -403,7 +419,7 @@ window.addEventListener('DOMContentLoaded',function () {
             () => {
               shakeWrap.classList.remove('eating');
 
-              area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan,except for baddie.
+              area.innerHTML = "<div id='baddie1' class='baddie down'><i></i></div>"; // Empty the gameplan,except for baddie.
               gameBlocks[nextIndex] = 10;
               gameArea[nextIndex] = 28;
               drawGamePlan(gameArea,gameBlocks);
@@ -417,7 +433,7 @@ window.addEventListener('DOMContentLoaded',function () {
         case 22: // Get the Power Rod of Enlightment
           gameBlocks[nextIndex] = 10;
           gameArea[nextIndex] = 28;
-          // playSound(gameEvents.sound);
+          playSound(gameEvent.sound);
           drawGamePlan(gameArea,gameBlocks);
           rockford = document.getElementById('baddie1');
           moveIt();
@@ -433,7 +449,7 @@ window.addEventListener('DOMContentLoaded',function () {
           shakeWrap.classList.add('digging');
           playSound(gameEvent.sound);
           shakeWrap.addEventListener('animationend',() => shakeWrap.classList.remove('digging'));
-          portal(nextBlock,true);
+          portal(state.nextBlock,true);
           break;
 
         default:
@@ -522,34 +538,34 @@ window.addEventListener('DOMContentLoaded',function () {
 
   // Set the timelimit argument in mm:ss format.
   ((timeLimit = '1:00') => {
-    const timer = document.querySelector('#timer > span');
-    if (!timer) return;
+    dom.timer = document.querySelector('#timer > span');
+    if (!dom.timer) return;
 
-    timer.innerText = timeLimit;
+    dom.timer.innerText = timeLimit;
   })();
 
   function timer(action) {
-    const timer = document.querySelector('#timer > span');
-    if (!timer) return;
+    dom.timer = document.querySelector('#timer > span');
+    if (!dom.timer) return;
 
-    let [minutes,seconds] = timer.innerText.trim().split(':');
+    let [minutes,seconds] = dom.timer.innerText.trim().split(':');
     const totSeconds = parseInt(minutes,10) * 60 + parseInt(seconds,10);
     const end = Date.now() + totSeconds * 1000;
 
     const now = new Date();
 
-    const x = setInterval(() => {
+    state.timer = setInterval(() => {
       const msLeft = Math.max(0,end - Date.now());
 
       const secsLeft = Math.ceil(msLeft / 1000);
       const minutes = Math.floor(secsLeft / 60);
       const seconds = secsLeft % 60;
 
-      timer.innerHTML = `${minutes}:${String(seconds).padStart(2,'0')}`;
+      dom.timer.innerHTML = `${minutes}:${String(seconds).padStart(2,'0')}`;
 
       if (msLeft === 0) {
         clearInterval(x);
-        timer.classList.add('timesup');
+        dom.timer.classList.add('timesup');
         loseGame('timesup');
       }
     },250);
@@ -633,7 +649,7 @@ window.addEventListener('DOMContentLoaded',function () {
       drawGamePlan(gameArea,gameBlocks);
     }
 
-    setInterval(moveCats,INTERVAL);
+    state.moveCats = setInterval(moveCats,INTERVAL);
   })();
 
   // Check if player is on touch device
@@ -842,6 +858,13 @@ window.addEventListener('DOMContentLoaded',function () {
   }
 
   function gameWon() {
+    // console.log('state.nextTile',state.nextTile);
+    // console.log(gameEvents.type === 'gameWon');
+    const gameEvent = gameEvents.find(obj => obj.type === 'gameWon') ?? null;
+    playSound(gameEvent.sound);
+    shakeWrap.classList.add('game-won');
+    clearInterval(state.timer);
+    // clearInterval(moveCats);
     gameAlert(`GRATTIS! 🏆\nDu åt upp alla ostar och tog dig i mål! 🧀`);
   }
 
