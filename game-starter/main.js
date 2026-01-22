@@ -433,6 +433,7 @@ window.addEventListener('DOMContentLoaded',function () {
         case 22: // Get the Power Rod of Enlightment
           gameBlocks[nextIndex] = 10;
           gameArea[nextIndex] = 28;
+
           playSound(gameEvent.sound);
           drawGamePlan(gameArea,gameBlocks);
           rockford = document.getElementById('baddie1');
@@ -864,7 +865,7 @@ window.addEventListener('DOMContentLoaded',function () {
     playSound(gameEvent.sound);
     shakeWrap.classList.add('game-won');
     clearInterval(state.timer);
-    // clearInterval(moveCats);
+    clearInterval(state.moveCats);
     gameAlert(`GRATTIS! 🏆\nDu åt upp alla ostar och tog dig i mål! 🧀`);
   }
 
