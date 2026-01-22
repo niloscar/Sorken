@@ -761,8 +761,8 @@ body {
 
 @keyframes baddie-digging {
   0% { opacity: 1; }
-  10% { opacity: .33; }
-  80% { opacity: .33; }
+  10% { opacity: .5; }
+  80% { opacity: .5; }
   100% { opacity: 1; }
 }
 
