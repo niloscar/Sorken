@@ -6,19 +6,21 @@ window.addEventListener('DOMContentLoaded',function () {
 
   const score = { cheeseCount: 0,catEncounters: 0,eagleEncounters: 0 };
   const body = document.querySelector('body');
+  const state = {};
+  const dom = {};
 
   // Enemy data
   const enemies = [
     {
       id: 55,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-401729.mp3'),volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-401729.mp3'),volume: 0.7 },
       hp: 1,
     },
     {
       id: 56,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-297927.mp3'),volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-297927.mp3'),volume: 0.7 },
       hp: 1,
     },
     {
@@ -26,14 +28,14 @@ window.addEventListener('DOMContentLoaded',function () {
       type: 'cat',
       sound: {
         file: new Audio('sounds/cat-meowing-type-02-293290.mp3'),
-        volume: 0.8,
+        volume: 0.7,
       },
       hp: 1,
     },
     {
       id: 58,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-6226.mp3'),volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-6226.mp3'),volume: 0.7 },
       hp: 1,
     },
     {
@@ -61,17 +63,37 @@ window.addEventListener('DOMContentLoaded',function () {
     {
       id: null,
       type: 'eagleSpawn',
-      sound: { file: new Audio('sounds/eagle.mp3'),volume: 0.9 },
+      sound: { file: new Audio('sounds/eagle.mp3'),volume: 0.8 },
       hp: null,
     },
-    { id: 90,type: 'digging',sound: { file: null,volume: null },hp: null },
     {
       id: null,
       type: 'timesup',
-      sound: {
-        file: new Audio('sounds/clock-ticking-365218.mp3'),
-        volume: 0.8,
-      },
+      sound: { file: new Audio('sounds/clock-ticking-365218.mp3'), volume: 0.7 },
+      hp: null,
+    },
+    {
+      id: 90,
+      type: 'digging',
+      sound: { file: new Audio('sounds/digging.mp3'), volume: 0.1 },
+      hp: null,
+    },
+    {
+      id: 20,
+      type: 'cheese',
+      sound: { file: new Audio('sounds/cheese-eating.mp3'), volume: 1 },
+      hp: null,
+    },
+    {
+      id: 22,
+      type: 'powerRod',
+      sound: { file: new Audio('sounds/light-switch.mp3'), volume: 0.7 },
+      hp: null,
+    },
+    {
+      id: 99,
+      type: 'gameWon',
+      sound: { file: new Audio('sounds/game-won.mp3'), volume: 0.7 },
       hp: null,
     },
   ];
@@ -116,7 +138,7 @@ window.addEventListener('DOMContentLoaded',function () {
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
-      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
+      11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,35,11,
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,99,11
     ],
     gameBlocks = [
@@ -235,11 +257,11 @@ window.addEventListener('DOMContentLoaded',function () {
   }
 
   const CheeseToOpenDoor = CountCheeses(20); // Default block number for cheese is 20.
-  // let collectedCheese = score.cheeseCount;
 
   /* If all cheeses collected, open door to goal. */
   function openDoor(target,collected) {
     if (collected >= target) {
+      console.log('open!');
       gameBlocks[550] = 10;
     }
   }
@@ -339,26 +361,29 @@ window.addEventListener('DOMContentLoaded',function () {
     if (gameOver) return;
 
     const nextIndex = posLeft + moveLeft + (posTop + moveTop) * gridSize;
-
     if (nextIndex < 0 || nextIndex >= gameBlocks.length) return;
 
-    const nextTile = gameArea[nextIndex];
-    const nextBlock = gameBlocks[nextIndex];
+    state.nextTile = gameArea[nextIndex];
+    state.nextBlock = gameBlocks[nextIndex];
+
+    const gameEvent = gameEvents.find(obj => obj.id === state.nextBlock || obj.id === state.nextTile) ?? null;
+    console.log(gameEvents);
+    console.log(gameEvent);
 
     // 🐱 KATT = FÖRLUST
-    if (catBlocks.has(nextBlock)) {
-      damage(nextBlock);
+    if (catBlocks.has(state.nextBlock)) {
+      damage(state.nextBlock);
       return;
     }
 
     // First if means the baddie can movie
-    if (!(nextBlock - 10)) {
+    if (!(state.nextBlock - 10)) {
       posLeft += moveLeft;
       posTop += moveTop;
       moveIt();
 
       /* Tile triggered events */
-      switch (nextTile) {
+      switch (state.nextTile) {
         case 99: // #WINNING
           gameWon();
           break;
@@ -371,11 +396,10 @@ window.addEventListener('DOMContentLoaded',function () {
       lastItemIndex = nextIndex;
 
       /* Block triggered events */
-      switch (nextBlock) {
+      switch (state.nextBlock) {
         case 20: // Eat cheese
-          checkEagleSpawn();
-          openDoor(CheeseToOpenDoor,score.cheeseCount);
-
+          console.log(gameEvent.sound);
+          playSound(gameEvent.sound);
           updateScore(score.cheeseCount++);
           if (score.cheeseCount % 3 === 0) {
             addLives(1);
@@ -385,6 +409,9 @@ window.addEventListener('DOMContentLoaded',function () {
                 : `Ate 3 more cheeses (+1 HP).`,
             );
           }
+          openDoor(CheeseToOpenDoor,score.cheeseCount);
+          checkEagleSpawn();
+          console.log(CheeseToOpenDoor,score.cheeseCount);
 
           shakeWrap.classList.add('eating');
           shakeWrap.addEventListener(
@@ -392,7 +419,7 @@ window.addEventListener('DOMContentLoaded',function () {
             () => {
               shakeWrap.classList.remove('eating');
 
-              area.innerHTML = "<div id='baddie1' class='baddie down'></div>"; // Empty the gameplan,except for baddie.
+              area.innerHTML = "<div id='baddie1' class='baddie down'><i></i></div>"; // Empty the gameplan,except for baddie.
               gameBlocks[nextIndex] = 10;
               gameArea[nextIndex] = 28;
               drawGamePlan(gameArea,gameBlocks);
@@ -406,6 +433,8 @@ window.addEventListener('DOMContentLoaded',function () {
         case 22: // Get the Power Rod of Enlightment
           gameBlocks[nextIndex] = 10;
           gameArea[nextIndex] = 28;
+
+          playSound(gameEvent.sound);
           drawGamePlan(gameArea,gameBlocks);
           rockford = document.getElementById('baddie1');
           moveIt();
@@ -413,14 +442,15 @@ window.addEventListener('DOMContentLoaded',function () {
           break;
 
         case 90: // Get into portal
-        case 91:
-        case 92:
-        case 93:
-        case 94:
-        case 95:
+        // case 91:
+        // case 92:
+        // case 93:
+        // case 94:
+        // case 95:
           shakeWrap.classList.add('digging');
+          playSound(gameEvent.sound);
           shakeWrap.addEventListener('animationend',() => shakeWrap.classList.remove('digging'));
-          portal(nextBlock,true);
+          portal(state.nextBlock,true);
           break;
 
         default:
@@ -509,34 +539,34 @@ window.addEventListener('DOMContentLoaded',function () {
 
   // Set the timelimit argument in mm:ss format.
   ((timeLimit = '1:00') => {
-    const timer = document.querySelector('#timer > span');
-    if (!timer) return;
+    dom.timer = document.querySelector('#timer > span');
+    if (!dom.timer) return;
 
-    timer.innerText = timeLimit;
+    dom.timer.innerText = timeLimit;
   })();
 
   function timer(action) {
-    const timer = document.querySelector('#timer > span');
-    if (!timer) return;
+    dom.timer = document.querySelector('#timer > span');
+    if (!dom.timer) return;
 
-    let [minutes,seconds] = timer.innerText.trim().split(':');
+    let [minutes,seconds] = dom.timer.innerText.trim().split(':');
     const totSeconds = parseInt(minutes,10) * 60 + parseInt(seconds,10);
     const end = Date.now() + totSeconds * 1000;
 
     const now = new Date();
 
-    const x = setInterval(() => {
+    state.timer = setInterval(() => {
       const msLeft = Math.max(0,end - Date.now());
 
       const secsLeft = Math.ceil(msLeft / 1000);
       const minutes = Math.floor(secsLeft / 60);
       const seconds = secsLeft % 60;
 
-      timer.innerHTML = `${minutes}:${String(seconds).padStart(2,'0')}`;
+      dom.timer.innerHTML = `${minutes}:${String(seconds).padStart(2,'0')}`;
 
       if (msLeft === 0) {
         clearInterval(x);
-        timer.classList.add('timesup');
+        dom.timer.classList.add('timesup');
         loseGame('timesup');
       }
     },250);
@@ -620,7 +650,7 @@ window.addEventListener('DOMContentLoaded',function () {
       drawGamePlan(gameArea,gameBlocks);
     }
 
-    setInterval(moveCats,INTERVAL);
+    state.moveCats = setInterval(moveCats,INTERVAL);
   })();
 
   // Check if player is on touch device
@@ -829,6 +859,13 @@ window.addEventListener('DOMContentLoaded',function () {
   }
 
   function gameWon() {
+    // console.log('state.nextTile',state.nextTile);
+    // console.log(gameEvents.type === 'gameWon');
+    const gameEvent = gameEvents.find(obj => obj.type === 'gameWon') ?? null;
+    playSound(gameEvent.sound);
+    shakeWrap.classList.add('game-won');
+    clearInterval(state.timer);
+    clearInterval(state.moveCats);
     gameAlert(`GRATTIS! 🏆\nDu åt upp alla ostar och tog dig i mål! 🧀`);
   }
 
