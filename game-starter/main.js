@@ -12,13 +12,13 @@ window.addEventListener('DOMContentLoaded',function () {
     {
       id: 55,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-401729.mp3'),volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-401729.mp3'),volume: 0.7 },
       hp: 1,
     },
     {
       id: 56,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-297927.mp3'),volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-297927.mp3'),volume: 0.7 },
       hp: 1,
     },
     {
@@ -26,14 +26,14 @@ window.addEventListener('DOMContentLoaded',function () {
       type: 'cat',
       sound: {
         file: new Audio('sounds/cat-meowing-type-02-293290.mp3'),
-        volume: 0.8,
+        volume: 0.7,
       },
       hp: 1,
     },
     {
       id: 58,
       type: 'cat',
-      sound: { file: new Audio('sounds/cat-meow-6226.mp3'),volume: 0.8 },
+      sound: { file: new Audio('sounds/cat-meow-6226.mp3'),volume: 0.7 },
       hp: 1,
     },
     {
@@ -61,17 +61,25 @@ window.addEventListener('DOMContentLoaded',function () {
     {
       id: null,
       type: 'eagleSpawn',
-      sound: { file: new Audio('sounds/eagle.mp3'),volume: 0.9 },
+      sound: { file: new Audio('sounds/eagle.mp3'),volume: 0.8 },
       hp: null,
     },
-    { id: 90,type: 'digging',sound: { file: null,volume: null },hp: null },
     {
       id: null,
       type: 'timesup',
-      sound: {
-        file: new Audio('sounds/clock-ticking-365218.mp3'),
-        volume: 0.8,
-      },
+      sound: { file: new Audio('sounds/clock-ticking-365218.mp3'), volume: 0.7 },
+      hp: null,
+    },
+    {
+      id: 90,
+      type: 'digging',
+      sound: { file: new Audio('sounds/digging.mp3'), volume: 0.1 },
+      hp: null,
+    },
+    {
+      id: 20,
+      type: 'cheese',
+      sound: { file: new Audio('sounds/cheese-eating.mp3'), volume: 1 },
       hp: null,
     },
   ];
@@ -369,13 +377,15 @@ window.addEventListener('DOMContentLoaded',function () {
       // Checks if player has moved since last updateScore.
       if (lastItemIndex === nextIndex) return;
       lastItemIndex = nextIndex;
+      const gameEvent = gameEvents.find(obj => obj.id === nextBlock) ?? null;
 
       /* Block triggered events */
       switch (nextBlock) {
         case 20: // Eat cheese
           checkEagleSpawn();
           openDoor(CheeseToOpenDoor,score.cheeseCount);
-
+          console.log(gameEvent.sound);
+          playSound(gameEvent.sound);
           updateScore(score.cheeseCount++);
           if (score.cheeseCount % 3 === 0) {
             addLives(1);
@@ -406,6 +416,7 @@ window.addEventListener('DOMContentLoaded',function () {
         case 22: // Get the Power Rod of Enlightment
           gameBlocks[nextIndex] = 10;
           gameArea[nextIndex] = 28;
+          // playSound(gameEvents.sound);
           drawGamePlan(gameArea,gameBlocks);
           rockford = document.getElementById('baddie1');
           moveIt();
@@ -413,12 +424,13 @@ window.addEventListener('DOMContentLoaded',function () {
           break;
 
         case 90: // Get into portal
-        case 91:
-        case 92:
-        case 93:
-        case 94:
-        case 95:
+        // case 91:
+        // case 92:
+        // case 93:
+        // case 94:
+        // case 95:
           shakeWrap.classList.add('digging');
+          playSound(gameEvent.sound);
           shakeWrap.addEventListener('animationend',() => shakeWrap.classList.remove('digging'));
           portal(nextBlock,true);
           break;
