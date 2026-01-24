@@ -8,6 +8,10 @@ const cfg = {
             name: 'Eraser',
             className: 10,
         },
+        {
+            name: 'Rotate',
+            className: 'rotate',
+        },
     ],
     tiles: [
         {
@@ -57,7 +61,12 @@ const cfg = {
             className: 20,
         },
     ],
-    items: [],
+    items: [
+        {
+            name: 'Light rod',
+            className: 22,
+        },
+    ],
     enemies: [
         {
             name: 'Misse',
@@ -125,7 +134,7 @@ function blankSheet(width, height, tile=10) {
         
         state.map.blank = new Array(width * height).fill(layer === 'tileLayer' ? tile : 10)
 
-        for(let [i, tileType] of state.map.blank.entries()) {
+        for(let [i, tileType] of Object.entries(state.map.blank)) {
             const el = document.createElement('div');
             el.id = `${layer}_n${i}`;
             el.classList.add(`tile`,`${prefix}${tileType}`);
@@ -209,6 +218,7 @@ function initSidebar() {
     contextMenuContent('tiles');
     contextMenuContent('blocks');
     contextMenuContent('enemies');
+    contextMenuContent('items');
     updateContextMenuVisibility();
 
     document.addEventListener('click', (e) => {
@@ -251,14 +261,38 @@ function applyToolToTile(tileEl) {
   if (tileEl.id === state.lastPaintedId) return;
   state.lastPaintedId = tileEl.id;
 
-  // To bort gamla classer på tilen.
-  for (const c of [...tileEl.classList]) {
-    if (/^[tb]\d{2}$/.test(c)) tileEl.classList.remove(c);
-  }
+  let prefix, className;
+  if (state.currentTool.className === 'rotate') {
+    // To bort gamla classer på tilen.
+    let rotation = false;
+    for (const c of [...tileEl.classList]) {
+        if (/^[r]\d{1,3}$/.test(c)) {
+            rotation = true;
+            tileEl.classList.remove(c);
+            className = (Number(c.slice(1)) === 270) ? 0 : Number(c.slice(1)) + 90;
+        } else {
+            rotation = false;
+            className = 90;
+        }
+    }
+    console.log(className);
 
-  // Välj prefix baserat på aktivt lager.
-  const prefix = (state.map.active === 'blockLayer') ? 'b' : 't';
-  tileEl.classList.add(`${prefix}${randCName(state.currentTool.className)}`);
+    console.log(rotation ? 'Jepp': 'Nepp');
+
+    // Välj prefix baserat på aktivt verktyg.
+    prefix = 'r';
+  } else {
+    // To bort gamla classer på tilen.
+    for (const c of [...tileEl.classList]) {
+        if (/^[tb]\d{2}$/.test(c)) tileEl.classList.remove(c);
+    }
+
+    // Välj prefix baserat på aktivt lager.
+    prefix = (state.map.active === 'blockLayer') ? 'b' : 't';
+    className = randCName(state.currentTool.className);
+}
+
+  tileEl.classList.add(`${prefix}${className}`);
 }
 
 // Kontrollera vilken tile som är under muspekaren.
@@ -349,18 +383,26 @@ function contextMenuContent(tools) {
 }
 
 function updateContextMenuVisibility() {
-    for (const tools of ['tools', 'tiles', 'blocks', 'enemies']) {
-        const show = (state.map.active === 'blockLayer')
-            ? true
-            : (state.map.active === 'tileLayer')
-                ? tools !== 'enemies'
-                : false;
+  for (const tools of ['tools', 'tiles', 'blocks', 'enemies', 'items']) {
+    const show =
+      (state.map.active === 'blockLayer')
+        ? tools !== 'tiles'
+        : (state.map.active === 'tileLayer')
+          ? !['enemies', 'items'].includes(tools)
+          : false;
 
-        document
-        .querySelectorAll('.submenu-' + tools)
-        .forEach(el => el.classList.toggle('show', show));
-    }
+    document
+      .querySelectorAll('.submenu-' + tools)
+      .forEach(el => {
+        el.classList.toggle('show', show);
+
+        if (tools === 'blocks') {
+          el.classList.toggle('caution', state.map.active !== 'blockLayer');
+        }
+      });
+  }
 }
+
 
 initSidebar();
 
@@ -375,37 +417,61 @@ function exportFunction() {
         dom.modal.remove();
     })
     dom.modal.id = 'modal';
-    state.map.export = [];
+    state.map.export = {};
     const layers = ['tileLayer','blockLayer'];
 
     const exportLayers = (layers) => {
+        state.map.export.rotationLayer = [];
         for (let layer of layers) {
             state.map.export[layer] = [];
             const children = state.map[layer].children;
             const re = (layer === 'tileLayer') ? /^t\d{2}$/ : /^b\d{2}$/;
-            for (const el of children) {
+            for (const [i, el] of Object.entries(children)) {
                 const cls = [...el.classList].find(c => re.test(c)); 
                 const num = cls ? Number(cls.replace(/\D+/g, '')) : null;
                 state.map.export[layer].push(num);
+
+                const rotCls = [...el.classList].find(c => /^r\d{1,3}$/.test(c));
+                const deg = rotCls ? Number(rotCls.slice(1)) : 0;
+                const current = state.map.export.rotationLayer[i];
+                state.map.export.rotationLayer[i] =
+                (current != null && current !== 0) ? current : deg;
             }
         }
     }
 
     exportLayers(layers);
 
+    // for (let key in state.map.export) {
+    //     dom['pre_' + key] = document.createElement('pre');
+    //     dom['pre_' + key].innerText = `${key == 'tileLayer' ? 'gameArea' : 'gameBlocks'} = [\n${state.map.export[key]
+    //         .map((v, idx) => (idx > 0 && idx % state.map.meta.width === 0 ? '\n' : '') + v)
+    //         .join(',')}\n]${key == 'tileLayer' ? ',' : ';'}`;
+    //     dom.wrapper.appendChild(dom['pre_' + key]);
+    // }
+    // document.querySelector('body').appendChild(dom.modal);
 
-    for (let i in state.map.export) {
-        dom['pre' + i] = document.createElement('pre');
-        // dom['pre' + i].innerText = `${i} = [\n${state.map.export[i]
-        //     .map((v, idx) => (idx > 0 && idx % state.map.meta.width === 0 ? '\n' : '') + v)
-        //     .join(',')}\n];`;
-        dom['pre' + i].innerText = `[\n${state.map.export[i]
-            .map((v, idx) => (idx > 0 && idx % state.map.meta.width === 0 ? '\n' : '') + v)
-            .join(',')}\n];`;
-        dom.wrapper.appendChild(dom['pre' + i]);
-    }
+    const fixString = (string) => string.trim().replace(/[^a-zA-Z0-9\s]/g, '');
 
-    document.querySelector('body').appendChild(dom.modal);
+    state.map.export.meta = {};
+    (function getMapAuthor() {
+        let name = prompt('Vad heter du?');
+        if (!name) return getMapAuthor();
+        state.map.export.meta.author = fixString(name);
+    })();
+
+    (function getFileName() {
+        let fileName = prompt('Vad vill du att din karta ska heta?');
+        if (!fileName) return getFileName();
+        state.map.export.meta.mapName = fileName.trim();
+        state.map.export.meta.fileName = fixString(fileName).replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() + '.json';
+    })();
+
+    state.map.export.meta.created = new Date().toLocaleDateString('sv-SE') + ' @' + new Date().toLocaleTimeString('sv-SE');
+    state.map.export.meta.height = state.map.meta.height;
+    state.map.export.meta.width = state.map.meta.width;
+
+    downloadJsonFile(state.map.export.meta.fileName, state.map.export);
 }
 
 function undoFunction() {
@@ -443,4 +509,19 @@ function restoreMap(snap) {
       if (snap[layer][i]) kids[i].classList.add(snap[layer][i]);
     }
   }
+}
+
+function downloadJsonFile(filename, data) {
+console.log('keys', data && Object.keys(data));
+
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+
+  URL.revokeObjectURL(url);
 }

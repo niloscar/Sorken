@@ -682,6 +682,14 @@ html, body * {
   background-position: center;
   background-size: cover;
 }
+.r90 { transform: rotate(90deg); }
+.r180 { transform: rotate(180deg); }
+.r270 { transform: rotate(270deg); }
+.r90, .r180, .r270 {
+  &.b55, &.b56, &.b57, &.b58, &.b59, &.b70 {
+    transform: none;
+  }
+}
 .t10 {
   background-image: none;
 } /* t10 = default ground on maps */
