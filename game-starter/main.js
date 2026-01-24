@@ -115,6 +115,24 @@ window.addEventListener('DOMContentLoaded',function () {
     /**
      * This is the background for the game area.
      */
+    rotationLayer = [
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,90,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,90,10,10,10,10,10,10,10,10,90,90,
+      10,90,10,90,10,90,10,10,10,10,90,90,10,10,10,10,10,10,10,10,10,10,10,90,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,90,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,90,10,10,10,10,
+      10,90,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,90,90,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,90,90,180,90,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,90,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,90,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,90,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,
+      10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10
+    ],
     gameArea = [
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
       11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,
@@ -176,17 +194,19 @@ window.addEventListener('DOMContentLoaded',function () {
   /**
    * Draw the initial gameplan
    */
-  function drawGamePlan(gameArea,gameBlocks) {
+  function drawGamePlan(gameArea,gameBlocks,rotationLayer) {
     let e;
+    let rotation = 0;
     for (let i = 0; i < gameArea.length; i++) {
       e = document.createElement('div');
-      e.className = 'tile t' + gameArea[i] + ' b' + gameBlocks[i];
+      rotation =  (rotationLayer[i]) ? ' r' + rotationLayer[i] : '';
+      e.className = `tile t${gameArea[i]} b${gameBlocks[i]}${rotation}`;
       e.id = 'n' + i;
       area.appendChild(e);
     }
   }
   console.log('Drawing gameplan.');
-  drawGamePlan(gameArea,gameBlocks);
+  drawGamePlan(gameArea,gameBlocks,rotationLayer);
 
   /**
    * Cats
@@ -343,7 +363,7 @@ window.addEventListener('DOMContentLoaded',function () {
         // Let the portal cave in.
         gameBlocks[portalIndex] = 10;
         gameArea[portalIndex] = 89;
-        drawGamePlan(gameArea,gameBlocks);
+        drawGamePlan(gameArea,gameBlocks,rotationLayer);
       }
     }
 
@@ -419,7 +439,7 @@ window.addEventListener('DOMContentLoaded',function () {
               area.innerHTML = "<div id='baddie1' class='baddie down'><i></i></div>"; // Empty the gameplan,except for baddie.
               gameBlocks[nextIndex] = 10;
               gameArea[nextIndex] = 28;
-              drawGamePlan(gameArea,gameBlocks);
+              drawGamePlan(gameArea,gameBlocks,rotationLayer);
               rockford = document.getElementById('baddie1');
               moveIt();
             },
@@ -432,7 +452,7 @@ window.addEventListener('DOMContentLoaded',function () {
           gameArea[nextIndex] = 28;
 
           playSound(gameEvent.sound);
-          drawGamePlan(gameArea,gameBlocks);
+          drawGamePlan(gameArea,gameBlocks,rotationLayer);
           rockford = document.getElementById('baddie1');
           moveIt();
           area.classList.toggle('lightsout');
@@ -684,7 +704,7 @@ window.addEventListener('DOMContentLoaded',function () {
       });
 
       area.querySelectorAll('.tile').forEach(t => t.remove());
-      drawGamePlan(gameArea,gameBlocks);
+      drawGamePlan(gameArea,gameBlocks,rotationLayer);
     }
 
     state.moveCatsFn = moveCats;
@@ -810,7 +830,7 @@ window.addEventListener('DOMContentLoaded',function () {
       }
 
       area.querySelectorAll('.tile').forEach(t => t.remove());
-      drawGamePlan(gameArea,gameBlocks);
+      drawGamePlan(gameArea,gameBlocks,rotationLayer);
     },400);
   }
 
@@ -932,5 +952,3 @@ window.addEventListener('DOMContentLoaded',function () {
     document.querySelector('body').addEventListener('touchstart', () => location.reload());
   }
 });
-
-
