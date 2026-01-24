@@ -7,7 +7,7 @@ body {
     grid-template-areas: 
         ". header ."
         "sidebar flash .";
-    grid-template-columns: minmax(fit-content, 200px), 1fr, auto;
+    grid-template-columns: auto, 1fr, auto;
     gap: var(--spacing);
     flex-direction: column;
     justify-content: center;
@@ -142,7 +142,7 @@ div#flash {
 
     & div#tileLayer, & div#blockLayer {
         position: absolute;
-        opacity: 0;
+        opacity: .3;
         pointer-events: none;
         transition: opacity .5s ease;
 
@@ -164,17 +164,22 @@ div#flash {
     padding: 0;
     margin: var(--spacing);
     position: absolute;
-    display: flex;
-    flex-direction: column;
     border-radius: 4px;
     overflow: hidden;
     pointer-events: none;
     display: none;
 
+    /* grid-template-columns: 1fr 1fr; */
+
     &.open {
         display: block;
         pointer-events: all;
     }
+/* 
+    & > h4:nth-of-type(odd) { grid-column: 1 / span 1; }
+    & > ul:nth-of-type(odd) { grid-column: 1 / span 1; }
+    & > h4:nth-of-type(even) { grid-column: 2 / span 1; }
+    & > ul:nth-of-type(even) { grid-column: 2 / span 1; } */
 
     & h4 {
         font-size: .85rem;
@@ -213,16 +218,31 @@ div#flash {
                 width: 20px;
             }
         }
+
+        &.caution {
+            color: darkred;
+        }
     }
 }
 
 .show { display: block !important; }
-#context-menu .b10 { background: 
-    repeating-linear-gradient(45deg, 
-    rgba(0,0,0,0),
-    rgba(0,0,0,0) 4px, 
-    rgba(0,0,0,1) 4px,
-     rgba(0,0,0,1) 5px); }
+.r90 { transform: rotate(90deg); }
+.r180 { transform: rotate(180deg); }
+.r270 { transform: rotate(270deg); }
+
+
+#context-menu .b10 { 
+    background: 
+        repeating-linear-gradient(45deg, 
+        rgba(0,0,0,0),
+        rgba(0,0,0,0) 4px, 
+        rgba(0,0,0,1) 4px,
+        rgba(0,0,0,1) 5px); 
+}
+
+#context-menu .brotate { 
+    background: url(img/rotate-right-solid-full.svg);
+}
 
 #modal {
     position: fixed;
@@ -235,6 +255,11 @@ div#flash {
     margin: var(--spacing);
     box-sizing: border-box;
     overflow-y: scroll;
+    user-select: all !important;
+
+    & * {
+        user-select: all !important;
+    }
 
     & > div {
         box-sizing: border-box;
