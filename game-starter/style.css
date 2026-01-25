@@ -634,25 +634,51 @@ html, body * {
   animation: baddie-digging 1500ms linear;
 }
 
-.lightsout .baddie::after {
+.baddie::after {
   content: "";
   display: block;
+  width: calc(var(--tileSize) * 24 * 2);
+  height: calc(var(--tileSize) * 24 * 2);
+  position: absolute;
+  background: radial-gradient(
+    rgba(0, 0, 0, 0) 10%,
+    rgba(0, 0, 0, 0) 25%
+  );
+  left: 16px;
+  top: 16px;
+  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotate(0deg);
+  transition: opacity 2s ease;
+  transform-origin: 0% 0%;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.lightsout:not(.game-won) .baddie::after {
   background: radial-gradient(
     rgba(150, 150, 0, 0.05) 10%,
     rgba(0, 0, 0, 0.95) 25%
   );
-  width: calc(var(--tileSize) * 24 * 2);
-  height: calc(var(--tileSize) * 24 * 2);
-  position: absolute;
-  left: 16px;
-  top: 16px;
-  transform: translate(-50%, -50%);
-  position: absolute;
-  transition: opacity 5s ease;
+  mask-image: none;
+  border-radius: 0;
+  animation: none;
+  opacity: 1;
 }
 
-.game-won .lightsout .baddie::after {
-  display: none;
+.game-won.lightsout .baddie::after,
+.game-won .baddie::after {
+  opacity: 1;
+  animation: rays 90s linear infinite;
+  background: repeating-conic-gradient(
+    rgba(255,255,255,1) 5%, 
+    rgba(255,255,255,0) 10%, 
+    rgba(255,255,255,0) 5%);
+  mask-image: radial-gradient(circle,
+    rgba(150,150,0,.4) 0%,
+    rgba(150,150,0,.1) 30%,
+    rgba(150,150,0,.1) 50%,
+    rgba(255,255,255,0) 70%
+  );
 }
 
 .baddie.up i {
@@ -997,6 +1023,18 @@ html, body * {
   }
   100% {
     transform: translate(0px, 0px) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes rays {
+  0% {
+    transform: rotate(0deg) translate(-50%, -50%);
+  }
+  50% {
+    transform: rotate(180deg) translate(-50%, -50%);
+  }
+  100% {
+    transform: rotate(360deg) translate(-50%, -50%);
   }
 }
 
