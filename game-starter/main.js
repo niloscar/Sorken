@@ -9,9 +9,21 @@ window.addEventListener('DOMContentLoaded',async function () {
   const state = {};
   const dom = {};
 
+  // Check if devmode active
+  const searchParams = new URLSearchParams(window.location.search);
+  state.devMode = (searchParams.has('dev') && searchParams.get('dev') == 1)
+    ? true
+    : false;
+
   // Get mapdata from json
-    state.mapData = await loadJson("./maps/lilla_klubban.json");
-    console.log(state.mapData);
+  state.mapFile = (state.devMode && searchParams.has('map')) 
+      ? `./maps/${searchParams.get('map')}.json`
+      : './maps/level_1.json';
+
+  state.mapData = await loadJson(state.mapFile);
+
+  console.log(state.mapData);
+
   // Enemy data
   const enemies = [
     {
@@ -118,8 +130,6 @@ window.addEventListener('DOMContentLoaded',async function () {
     rotationLayer = state.mapData.rotationLayer,
     gameArea = state.mapData.tileLayer,
     gameBlocks = state.mapData.blockLayer;
-
-
 
   initTouchControls();
   initLives();
